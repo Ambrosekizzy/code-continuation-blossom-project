@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Menu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import SearchResults from './SearchResults';
 
 const Header = () => {
@@ -37,7 +38,7 @@ const Header = () => {
           >
             <Menu className="w-6 h-6 text-white" />
           </button>
-          <div className="text-2xl font-bold text-yellow-400">FMovies</div>
+          <Link to="/" className="text-2xl font-bold text-yellow-400">FMovies</Link>
         </div>
 
         <button
@@ -52,9 +53,9 @@ const Header = () => {
       {isMenuOpen && (
         <div className="absolute top-16 left-5 bg-yellow-400 rounded-lg p-3 z-40 w-48">
           <ul className="space-y-2">
-            <li><a href="/" className="block text-black hover:underline">Home</a></li>
-            <li><a href="/movies" className="block text-black hover:underline">Movies</a></li>
-            <li><a href="/tv" className="block text-black hover:underline">TV Shows</a></li>
+            <li><Link to="/" className="block text-black hover:underline">Home</Link></li>
+            <li><Link to="/movies" className="block text-black hover:underline">Movies</Link></li>
+            <li><Link to="/tv" className="block text-black hover:underline">TV Shows</Link></li>
           </ul>
         </div>
       )}
