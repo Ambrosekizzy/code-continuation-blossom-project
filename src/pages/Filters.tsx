@@ -116,23 +116,6 @@ const Filters = () => {
     }
   };
 
-  const genres = [
-    { id: '28', name: 'Action' },
-    { id: '12', name: 'Adventure' },
-    { id: '16', name: 'Animation' },
-    { id: '35', name: 'Comedy' },
-    { id: '80', name: 'Crime' },
-    { id: '18', name: 'Drama' },
-    { id: '10751', name: 'Family' },
-    { id: '14', name: 'Fantasy' },
-    { id: '27', name: 'Horror' },
-    { id: '9648', name: 'Mystery' },
-    { id: '878', name: 'Science Fiction' },
-    { id: '53', name: 'Thriller' }
-  ];
-
-  const years = Array.from({ length: 30 }, (_, i) => (2024 - i).toString());
-
   useEffect(() => {
     applyFilters(currentPage);
   }, [filters, currentPage]);
