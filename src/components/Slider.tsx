@@ -19,6 +19,7 @@ interface SliderProps {
 
 const Slider: React.FC<SliderProps> = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [myList, setMyList] = useState<number[]>([]);
 
   const genreMap: { [key: number]: string } = {
     28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
@@ -38,6 +39,23 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
     return () => clearInterval(interval);
   }, [data]);
 
+  useEffect(() => {
+    // Load My List from localStorage
+    const savedMyList = localStorage.getItem('myList');
+    if (savedMyList) {
+      setMyList(JSON.parse(savedMyList));
+    }
+  }, []);
+
+  const toggleMyList = (itemId: number) => {
+    const updatedList = myList.includes(itemId)
+      ? myList.filter(id => id !== itemId)
+      : [...myList, itemId];
+    
+    setMyList(updatedList);
+    localStorage.setItem('myList', JSON.stringify(updatedList));
+  };
+
   if (data.length === 0) return null;
 
   const currentItem = data[currentIndex];
@@ -56,10 +74,10 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
               className="w-full h-80 md:h-[80vh] object-cover object-top"
             />
             <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent">
-              <h2 className="text-3xl font-bold mb-3 drop-shadow-lg">
+              <h2 className="text-3xl font-bold mb-3 drop-shadow-lg text-white">
                 {item.title || item.name}
               </h2>
-              <div className="flex items-center gap-4 mb-2 text-lg drop-shadow-lg">
+              <div className="flex items-center gap-4 mb-2 text-lg drop-shadow-lg text-white">
                 <span className="font-bold">
                   {item.release_date ? item.release_date.split('-')[0] : 
                    item.first_air_date ? item.first_air_date.split('-')[0] : 'N/A'}
@@ -72,18 +90,25 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
                   <span className="text-yellow-400">★</span> {item.vote_average.toFixed(1)}
                 </span>
               </div>
-              <div className="text-lg mb-4 drop-shadow-lg">
+              <div className="text-lg mb-4 drop-shadow-lg text-white">
                 {item.genre_ids.map(id => getGenreName(id)).join(', ')}
               </div>
               <div className="flex gap-3">
                 <a
                   href={item.media_type === 'movie' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
-                  className="bg-white/90 text-black px-5 py-3 rounded font-semibold hover:bg-white transition-colors border-2 border-black"
+                  className="bg-white text-black px-5 py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black"
                 >
                   ▶ Play
                 </a>
-                <button className="bg-white/90 text-black px-5 py-3 rounded font-semibold hover:bg-white transition-colors border-2 border-black">
-                  + My List
+                <button 
+                  onClick={() => toggleMyList(item.id)}
+                  className={`px-5 py-3 rounded font-semibold transition-colors border-2 border-black ${
+                    myList.includes(item.id) 
+                      ? 'bg-yellow-500 text-black hover:bg-yellow-600' 
+                      : 'bg-white text-black hover:bg-gray-200'
+                  }`}
+                >
+                  {myList.includes(item.id) ? '✓ In My List' : '+ My List'}
                 </button>
               </div>
             </div>

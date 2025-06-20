@@ -66,6 +66,7 @@ const Filters = () => {
         sort_by: filters.sortBy
       });
 
+      // Apply ALL filters - content must match ALL criteria
       if (filters.genre) params.append('with_genres', filters.genre);
       if (filters.year) params.append('year', filters.year);
       if (filters.rating) params.append('vote_average.gte', filters.rating);
@@ -89,7 +90,7 @@ const Filters = () => {
         setMovieResults([]);
         setTotalPages(Math.min(data.total_pages, 500));
       } else {
-        // For 'all', we'll fetch both movies and TV shows
+        // For 'all', fetch both but apply same filters to both
         const movieParams = new URLSearchParams(params);
         const tvParams = new URLSearchParams(params);
         if (filters.year) {
@@ -145,7 +146,9 @@ const Filters = () => {
           <PaginationItem>
             <PaginationPrevious 
               onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-              className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`cursor-pointer text-white border-yellow-400 hover:bg-yellow-400 hover:text-black ${
+                currentPage === 1 ? 'pointer-events-none opacity-50' : ''
+              }`}
             />
           </PaginationItem>
           
@@ -154,7 +157,11 @@ const Filters = () => {
               <PaginationLink
                 onClick={() => handlePageChange(page)}
                 isActive={page === currentPage}
-                className="cursor-pointer"
+                className={`cursor-pointer ${
+                  page === currentPage 
+                    ? 'bg-yellow-400 text-black border-yellow-400' 
+                    : 'text-white border-yellow-400 hover:bg-yellow-400 hover:text-black'
+                }`}
               >
                 {page}
               </PaginationLink>
@@ -164,7 +171,9 @@ const Filters = () => {
           <PaginationItem>
             <PaginationNext 
               onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`cursor-pointer text-white border-yellow-400 hover:bg-yellow-400 hover:text-black ${
+                currentPage === totalPages ? 'pointer-events-none opacity-50' : ''
+              }`}
             />
           </PaginationItem>
         </PaginationContent>
