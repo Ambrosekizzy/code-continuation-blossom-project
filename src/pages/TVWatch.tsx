@@ -2,12 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import { Button } from '../components/ui/button';
-
-interface Season {
-  season_number: number;
-  episode_count: number;
-}
 
 interface TVDetails {
   id: number;
@@ -16,82 +10,54 @@ interface TVDetails {
   number_of_seasons: number;
 }
 
+interface Season {
+  season_number: number;
+  episode_count: number;
+}
+
 const TVWatch = () => {
   const { id } = useParams<{ id: string }>();
-  const [selectedSeason, setSelectedSeason] = useState(1);
-  const [selectedEpisode, setSelectedEpisode] = useState(1);
+  const [currentSeason, setCurrentSeason] = useState(1);
+  const [currentEpisode, setCurrentEpisode] = useState(1);
   const [tvDetails, setTVDetails] = useState<TVDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
 
   useEffect(() => {
-    fetchTVDetails();
+    const fetchTVDetails = async () => {
+      try {
+        const response = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        const data = await response.json();
+        setTVDetails(data);
+      } catch (error) {
+        console.error('Error fetching TV details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchTVDetails();
+    }
   }, [id]);
 
-  const fetchTVDetails = async () => {
-    try {
-      const response = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-      const data: TVDetails = await response.json();
-      setTVDetails(data);
-    } catch (error) {
-      console.error('Error fetching TV details:', error);
-    } finally {
-      setLoading(false);
-    }
+  const handleSeasonChange = (season: number) => {
+    setCurrentSeason(season);
+    setCurrentEpisode(1);
   };
 
-  const getCurrentSeason = () => {
-    return tvDetails?.seasons.find(season => season.season_number === selectedSeason);
-  };
-
-  const renderSeasonButtons = () => {
-    if (!tvDetails) return null;
-
-    return tvDetails.seasons
-      .filter(season => season.season_number > 0)
-      .map(season => (
-        <Button
-          key={season.season_number}
-          variant={selectedSeason === season.season_number ? "default" : "outline"}
-          onClick={() => {
-            setSelectedSeason(season.season_number);
-            setSelectedEpisode(1);
-          }}
-          className="mr-2 mb-2"
-        >
-          Season {season.season_number}
-        </Button>
-      ));
-  };
-
-  const renderEpisodeButtons = () => {
-    const currentSeason = getCurrentSeason();
-    if (!currentSeason) return null;
-
-    const episodes = [];
-    for (let i = 1; i <= currentSeason.episode_count; i++) {
-      episodes.push(
-        <Button
-          key={i}
-          variant={selectedEpisode === i ? "default" : "outline"}
-          onClick={() => setSelectedEpisode(i)}
-          className="mr-2 mb-2"
-          size="sm"
-        >
-          EP {i}
-        </Button>
-      );
-    }
-    return episodes;
+  const getEpisodeCount = (seasonNumber: number) => {
+    const season = tvDetails?.seasons?.find(s => s.season_number === seasonNumber);
+    return season?.episode_count || 10;
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900">
         <Header />
-        <div className="container mx-auto px-4 py-4 text-white text-center">
-          Loading...
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Loading...</div>
         </div>
       </div>
     );
@@ -100,37 +66,72 @@ const TVWatch = () => {
   return (
     <div className="min-h-screen bg-gray-900">
       <Header />
-      <main className="container mx-auto px-4 py-4">
-        <div className="w-full mb-6">
+      <main className="w-full">
+        <div className="w-full">
           <iframe
-            src={`https://autoembed.pro/tv/${id}/${selectedSeason}/${selectedEpisode}`}
-            className="w-full h-[50vh] rounded-lg"
+            src={`https://autoembed.pro/tv/${id}/${currentSeason}/${currentEpisode}`}
+            className="w-full h-[50vh] border-0"
             allowFullScreen
             title="TV Show Player"
           />
         </div>
-
-        {tvDetails && (
-          <div className="bg-gray-800 rounded-lg p-4">
-            <h2 className="text-xl font-bold text-white mb-4">{tvDetails.name}</h2>
+        
+        {/* Season/Episode Navigation */}
+        <div className="bg-gray-800 p-4">
+          <div className="container mx-auto">
+            <h2 className="text-white text-xl font-bold mb-4">
+              {tvDetails?.name} - Season {currentSeason}, Episode {currentEpisode}
+            </h2>
             
-            <div className="mb-4">
-              <h3 className="text-lg font-semibold text-white mb-2">Seasons</h3>
-              <div className="flex flex-wrap">
-                {renderSeasonButtons()}
+            <div className="flex flex-col md:flex-row gap-4">
+              {/* Season Selection */}
+              <div className="flex-1">
+                <label className="block text-white text-sm font-medium mb-2">Season</label>
+                <select
+                  value={currentSeason}
+                  onChange={(e) => handleSeasonChange(Number(e.target.value))}
+                  className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-yellow-400 outline-none"
+                >
+                  {Array.from({ length: tvDetails?.number_of_seasons || 1 }, (_, i) => i + 1).map(season => (
+                    <option key={season} value={season}>Season {season}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Episode Selection */}
+              <div className="flex-1">
+                <label className="block text-white text-sm font-medium mb-2">Episode</label>
+                <select
+                  value={currentEpisode}
+                  onChange={(e) => setCurrentEpisode(Number(e.target.value))}
+                  className="w-full p-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-yellow-400 outline-none"
+                >
+                  {Array.from({ length: getEpisodeCount(currentSeason) }, (_, i) => i + 1).map(episode => (
+                    <option key={episode} value={episode}>Episode {episode}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                Season {selectedSeason} Episodes
-              </h3>
-              <div className="flex flex-wrap">
-                {renderEpisodeButtons()}
-              </div>
+            {/* Quick Episode Navigation */}
+            <div className="flex gap-2 mt-4 flex-wrap">
+              <button
+                onClick={() => currentEpisode > 1 && setCurrentEpisode(currentEpisode - 1)}
+                disabled={currentEpisode === 1}
+                className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous Episode
+              </button>
+              <button
+                onClick={() => currentEpisode < getEpisodeCount(currentSeason) && setCurrentEpisode(currentEpisode + 1)}
+                disabled={currentEpisode === getEpisodeCount(currentSeason)}
+                className="px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next Episode
+              </button>
             </div>
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

@@ -9,11 +9,11 @@ const MovieWatch = () => {
   return (
     <div className="min-h-screen bg-gray-900">
       <Header />
-      <main className="container mx-auto px-4 py-4">
+      <main className="w-full">
         <div className="w-full">
           <iframe
             src={`https://autoembed.pro/movie/${id}`}
-            className="w-full h-[50vh] rounded-lg"
+            className="w-full h-[50vh] border-0"
             allowFullScreen
             title="Movie Player"
           />
