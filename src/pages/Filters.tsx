@@ -30,7 +30,8 @@ const Filters = () => {
     rating: '',
     sortBy: 'popularity.desc'
   });
-  const [results, setResults] = useState<Movie[]>([]);
+  const [movieResults, setMovieResults] = useState<Movie[]>([]);
+  const [tvResults, setTvResults] = useState<Movie[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -71,13 +72,22 @@ const Filters = () => {
 
       if (filters.type === 'movie') {
         endpoint = `https://api.themoviedb.org/3/discover/movie?${params}`;
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        setMovieResults(data.results.map((item: any) => ({ ...item, media_type: 'movie' })));
+        setTvResults([]);
+        setTotalPages(Math.min(data.total_pages, 500));
       } else if (filters.type === 'tv') {
-        endpoint = `https://api.themoviedb.org/3/discover/tv?${params}`;
         if (filters.year) {
           params.delete('year');
           params.append('first_air_date_year', filters.year);
         }
         endpoint = `https://api.themoviedb.org/3/discover/tv?${params}`;
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        setTvResults(data.results.map((item: any) => ({ ...item, media_type: 'tv' })));
+        setMovieResults([]);
+        setTotalPages(Math.min(data.total_pages, 500));
       } else {
         // For 'all', we'll fetch both movies and TV shows
         const movieParams = new URLSearchParams(params);
@@ -95,30 +105,33 @@ const Filters = () => {
         const movieData = await movieRes.json();
         const tvData = await tvRes.json();
         
-        const combined = [
-          ...movieData.results.map((item: any) => ({ ...item, media_type: 'movie' })),
-          ...tvData.results.map((item: any) => ({ ...item, media_type: 'tv' }))
-        ].slice(0, 20);
-        
-        setResults(combined);
+        setMovieResults(movieData.results.map((item: any) => ({ ...item, media_type: 'movie' })));
+        setTvResults(tvData.results.map((item: any) => ({ ...item, media_type: 'tv' })));
         setTotalPages(Math.max(movieData.total_pages, tvData.total_pages));
-        setLoading(false);
-        return;
       }
-
-      const response = await fetch(endpoint);
-      const data = await response.json();
-      setResults(data.results.map((item: any) => ({
-        ...item,
-        media_type: filters.type === 'movie' ? 'movie' : 'tv'
-      })));
-      setTotalPages(Math.min(data.total_pages, 500));
     } catch (error) {
       console.error('Error applying filters:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  const genres = [
+    { id: '28', name: 'Action' },
+    { id: '12', name: 'Adventure' },
+    { id: '16', name: 'Animation' },
+    { id: '35', name: 'Comedy' },
+    { id: '80', name: 'Crime' },
+    { id: '18', name: 'Drama' },
+    { id: '10751', name: 'Family' },
+    { id: '14', name: 'Fantasy' },
+    { id: '27', name: 'Horror' },
+    { id: '9648', name: 'Mystery' },
+    { id: '878', name: 'Science Fiction' },
+    { id: '53', name: 'Thriller' }
+  ];
+
+  const years = Array.from({ length: 30 }, (_, i) => (2024 - i).toString());
 
   useEffect(() => {
     applyFilters(currentPage);
@@ -175,6 +188,8 @@ const Filters = () => {
       </Pagination>
     );
   };
+
+  const allResults = [...movieResults, ...tvResults];
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -263,10 +278,26 @@ const Filters = () => {
           <>
             <div className="mb-4">
               <h2 className="text-xl font-semibold text-white">
-                {results.length} Results Found
+                {allResults.length} Results Found
               </h2>
             </div>
-            <MovieGrid movies={results} type="multi" />
+            
+            {/* Show movies if we have them or if type is movie */}
+            {movieResults.length > 0 && (
+              <div className="mb-8">
+                {filters.type === 'all' && <h3 className="text-lg font-semibold text-white mb-4">Movies</h3>}
+                <MovieGrid movies={movieResults} type="movie" />
+              </div>
+            )}
+            
+            {/* Show TV shows if we have them or if type is tv */}
+            {tvResults.length > 0 && (
+              <div className="mb-8">
+                {filters.type === 'all' && <h3 className="text-lg font-semibold text-white mb-4">TV Shows</h3>}
+                <MovieGrid movies={tvResults} type="tv" />
+              </div>
+            )}
+            
             {totalPages > 1 && renderPagination()}
           </>
         )}
