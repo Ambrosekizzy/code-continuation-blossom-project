@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useMyList } from '../hooks/useMyList';
 
 interface SliderItem {
   id: number;
@@ -19,7 +20,9 @@ interface SliderProps {
 
 const Slider: React.FC<SliderProps> = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [myList, setMyList] = useState<number[]>([]);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const { addToMyList, removeFromMyList, isInMyList } = useMyList();
 
   const genreMap: { [key: number]: string } = {
     28: "Action", 12: "Adventure", 16: "Animation", 35: "Comedy", 80: "Crime",
@@ -39,21 +42,82 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
     return () => clearInterval(interval);
   }, [data]);
 
-  useEffect(() => {
-    // Load My List from localStorage
-    const savedMyList = localStorage.getItem('myList');
-    if (savedMyList) {
-      setMyList(JSON.parse(savedMyList));
-    }
-  }, []);
-
-  const toggleMyList = (itemId: number) => {
-    const updatedList = myList.includes(itemId)
-      ? myList.filter(id => id !== itemId)
-      : [...myList, itemId];
+  const toggleMyList = async (item: SliderItem) => {
+    const itemId = `${item.id}-${item.media_type}`;
     
-    setMyList(updatedList);
-    localStorage.setItem('myList', JSON.stringify(updatedList));
+    if (isInMyList(item.id, item.media_type)) {
+      await removeFromMyList(item.id, item.media_type);
+    } else {
+      await addToMyList({
+        tmdb_id: item.id,
+        media_type: item.media_type,
+        title: item.title || item.name || '',
+        poster_path: item.backdrop_path,
+        backdrop_path: item.backdrop_path,
+        vote_average: item.vote_average,
+        release_date: item.release_date || item.first_air_date,
+        genre_ids: item.genre_ids
+      });
+    }
+  };
+
+  const goToNext = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % data.length);
+  };
+
+  const goToPrevious = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + data.length) % data.length);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      goToNext();
+    }
+    if (isRightSwipe) {
+      goToPrevious();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setTouchStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (touchStart) {
+      setTouchEnd(e.clientX);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      goToNext();
+    }
+    if (isRightSwipe) {
+      goToPrevious();
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
   };
 
   if (data.length === 0) return null;
@@ -65,6 +129,13 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
       <div 
         className="flex transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       >
         {data.map((item, index) => (
           <div key={`${item.id}-${index}`} className="min-w-full relative">
@@ -101,18 +172,45 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
                   ▶ Play
                 </a>
                 <button 
-                  onClick={() => toggleMyList(item.id)}
+                  onClick={() => toggleMyList(item)}
                   className={`px-5 py-3 rounded font-semibold transition-colors border-2 border-black ${
-                    myList.includes(item.id) 
+                    isInMyList(item.id, item.media_type)
                       ? 'bg-yellow-500 text-black hover:bg-yellow-600' 
                       : 'bg-white text-black hover:bg-gray-200'
                   }`}
                 >
-                  {myList.includes(item.id) ? '✓ In My List' : '+ My List'}
+                  {isInMyList(item.id, item.media_type) ? '✓ In My List' : '+ My List'}
                 </button>
               </div>
             </div>
           </div>
+        ))}
+      </div>
+      
+      {/* Navigation arrows */}
+      <button
+        onClick={goToPrevious}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+      >
+        ←
+      </button>
+      <button
+        onClick={goToNext}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+      >
+        →
+      </button>
+      
+      {/* Dot indicators */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+        {data.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-3 h-3 rounded-full transition-colors ${
+              index === currentIndex ? 'bg-yellow-500' : 'bg-white/50'
+            }`}
+          />
         ))}
       </div>
     </div>

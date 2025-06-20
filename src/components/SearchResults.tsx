@@ -52,7 +52,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ results, query }) => {
       
       <button
         onClick={handleViewAll}
-        className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+        className="w-full bg-yellow-500 text-black p-3 rounded-lg hover:bg-yellow-600 transition-colors font-semibold"
       >
         View All Results
       </button>
