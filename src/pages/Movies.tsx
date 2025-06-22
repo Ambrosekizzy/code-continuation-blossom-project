@@ -62,7 +62,9 @@ const Movies = () => {
           <PaginationItem>
             <PaginationPrevious 
               onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-              className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`cursor-pointer text-white border-yellow-400 hover:bg-yellow-400 hover:text-black ${
+                currentPage === 1 ? 'pointer-events-none opacity-50' : ''
+              }`}
             />
           </PaginationItem>
           
@@ -71,7 +73,11 @@ const Movies = () => {
               <PaginationLink
                 onClick={() => handlePageChange(page)}
                 isActive={page === currentPage}
-                className="cursor-pointer"
+                className={`cursor-pointer ${
+                  page === currentPage 
+                    ? 'bg-yellow-400 text-black border-yellow-400' 
+                    : 'text-white border-yellow-400 hover:bg-yellow-400 hover:text-black'
+                }`}
               >
                 {page}
               </PaginationLink>
@@ -81,7 +87,9 @@ const Movies = () => {
           <PaginationItem>
             <PaginationNext 
               onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+              className={`cursor-pointer text-white border-yellow-400 hover:bg-yellow-400 hover:text-black ${
+                currentPage === totalPages ? 'pointer-events-none opacity-50' : ''
+              }`}
             />
           </PaginationItem>
         </PaginationContent>

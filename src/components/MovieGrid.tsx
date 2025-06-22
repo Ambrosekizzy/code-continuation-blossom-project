@@ -27,7 +27,7 @@ const MovieGrid: React.FC<MovieGridProps> = ({ movies, type }) => {
             <img
               src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
               alt={movie.title || movie.name}
-              className="w-full rounded-lg mb-2"
+              className="w-full h-72 object-cover rounded-lg mb-2"
             />
             <div className="text-white font-bold text-sm mb-1">
               {movie.title || movie.name}
