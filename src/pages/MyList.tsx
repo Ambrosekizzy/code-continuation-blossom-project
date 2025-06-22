@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import MovieGrid from '../components/MovieGrid';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '../hooks/use-toast';
 
 interface MyListItem {
   id: string;
@@ -21,6 +22,7 @@ interface MyListItem {
 
 const MyList = () => {
   const { user, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   const [myListItems, setMyListItems] = useState<MyListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,6 +48,41 @@ const MyList = () => {
       console.error('Error fetching my list:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (tmdbId: number, mediaType: string) => {
+    try {
+      const { error } = await supabase
+        .from('my_list')
+        .delete()
+        .eq('user_id', user?.id)
+        .eq('tmdb_id', tmdbId)
+        .eq('media_type', mediaType);
+
+      if (error) {
+        console.error('Error removing from my list:', error);
+        toast({
+          title: "Error",
+          description: "Failed to remove item from your list.",
+          variant: "destructive",
+        });
+      } else {
+        setMyListItems(prev => prev.filter(item => 
+          !(item.tmdb_id === tmdbId && item.media_type === mediaType)
+        ));
+        toast({
+          title: "Removed from My List",
+          description: "Item has been removed from your list.",
+        });
+      }
+    } catch (error) {
+      console.error('Error removing from my list:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove item from your list.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -95,7 +132,9 @@ const MyList = () => {
             </div>
             <MovieGrid 
               movies={formattedItems} 
-              type={formattedItems.length > 0 ? (formattedItems[0].media_type as 'movie' | 'tv') : 'movie'} 
+              type="movie"
+              onDelete={handleDelete}
+              showDeleteButton={true}
             />
           </>
         )}
