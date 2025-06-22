@@ -16,14 +16,14 @@ const Auth = () => {
   const [resetMode, setResetMode] = useState(false);
 
   const [signInData, setSignInData] = useState({
-    email: '',
+    emailOrUsername: '',
     password: '',
   });
 
   const [signUpData, setSignUpData] = useState({
     email: '',
     password: '',
-    fullName: '',
+    username: '',
   });
 
   const [resetEmail, setResetEmail] = useState('');
@@ -36,7 +36,7 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signIn(signInData.email, signInData.password);
+    const { error } = await signIn(signInData.emailOrUsername, signInData.password);
     
     if (error) {
       toast({
@@ -58,7 +58,7 @@ const Auth = () => {
     e.preventDefault();
     setLoading(true);
     
-    const { error } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
+    const { error } = await signUp(signUpData.email, signUpData.password, signUpData.username);
     
     if (error) {
       toast({
@@ -197,12 +197,12 @@ const Auth = () => {
               
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
-                  <Label htmlFor="signin-email" className="text-white">Email</Label>
+                  <Label htmlFor="signin-email" className="text-white">Email or Username</Label>
                   <Input
                     id="signin-email"
-                    type="email"
-                    value={signInData.email}
-                    onChange={(e) => setSignInData({...signInData, email: e.target.value})}
+                    type="text"
+                    value={signInData.emailOrUsername}
+                    onChange={(e) => setSignInData({...signInData, emailOrUsername: e.target.value})}
                     required
                     className="bg-gray-700 border-gray-600 text-white"
                   />
@@ -252,12 +252,12 @@ const Auth = () => {
               
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
-                  <Label htmlFor="signup-name" className="text-white">Full Name</Label>
+                  <Label htmlFor="signup-username" className="text-white">Username</Label>
                   <Input
-                    id="signup-name"
+                    id="signup-username"
                     type="text"
-                    value={signUpData.fullName}
-                    onChange={(e) => setSignUpData({...signUpData, fullName: e.target.value})}
+                    value={signUpData.username}
+                    onChange={(e) => setSignUpData({...signUpData, username: e.target.value})}
                     className="bg-gray-700 border-gray-600 text-white"
                   />
                 </div>

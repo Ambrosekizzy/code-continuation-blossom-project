@@ -82,7 +82,7 @@ const Header = () => {
               >
                 <User className="w-5 h-5 text-white" />
                 <span className="text-white text-sm hidden md:block">
-                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                  {user.user_metadata?.username || user.user_metadata?.full_name || user.email?.split('@')[0]}
                 </span>
               </button>
               
@@ -91,10 +91,17 @@ const Header = () => {
                   <div className="flex flex-col gap-2">
                     <div className="px-3 py-2 border-b border-gray-700">
                       <p className="text-white font-medium">
-                        {user.user_metadata?.full_name || 'User'}
+                        {user.user_metadata?.username || user.user_metadata?.full_name || 'User'}
                       </p>
                       <p className="text-gray-400 text-sm">{user.email}</p>
                     </div>
+                    <Link
+                      to="/profile"
+                      className="block px-3 py-2 text-white hover:bg-gray-700 rounded"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      Profile
+                    </Link>
                     <Link
                       to="/my-list"
                       className="block px-3 py-2 text-white hover:bg-gray-700 rounded"
@@ -134,6 +141,7 @@ const Header = () => {
             <li><Link to="/tv" className="block text-black hover:underline">TV Shows</Link></li>
             <li><Link to="/filters" className="block text-black hover:underline">Filters</Link></li>
             {user && <li><Link to="/my-list" className="block text-black hover:underline">My List</Link></li>}
+            {user && <li><Link to="/profile" className="block text-black hover:underline">Profile</Link></li>}
           </ul>
         </div>
       )}
