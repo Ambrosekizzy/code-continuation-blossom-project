@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Slider from '../components/Slider';
@@ -58,7 +57,7 @@ const Index = () => {
         <div className="w-full px-4">
           <TrendingSection movies={trendingMovies} tvShows={trendingTvShows} />
           
-          <div className="flex justify-between items-center my-6">
+          <div className="flex justify-between items-center my-6 relative z-10">
             <h2 className="text-3xl font-bold text-white">Latest Movies</h2>
             <Link to="/movies" className="bg-gray-300 text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-400 transition-colors">
               See More
@@ -66,7 +65,7 @@ const Index = () => {
           </div>
           <MovieGrid movies={latestMovies} type="movie" />
 
-          <div className="flex justify-between items-center my-6">
+          <div className="flex justify-between items-center my-6 relative z-10">
             <h2 className="text-3xl font-bold text-white">Latest TV Shows</h2>
             <Link to="/tv" className="bg-gray-300 text-black px-4 py-2 rounded-full font-semibold hover:bg-gray-400 transition-colors">
               See More

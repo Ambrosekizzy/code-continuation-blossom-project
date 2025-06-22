@@ -24,9 +24,9 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({ movies, tvShows }) =>
   const currentData = activeTab === 'movies' ? movies : tvShows;
 
   return (
-    <div className="px-5 mb-8">
+    <div className="px-5 mb-8 relative z-20">
       <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2 text-xl font-bold">
+        <div className="flex items-center gap-2 text-xl font-bold text-white">
           Trending <TrendingUp className="w-5 h-5 text-yellow-400" />
         </div>
         <div className="flex gap-2">

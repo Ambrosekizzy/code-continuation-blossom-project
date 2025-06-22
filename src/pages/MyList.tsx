@@ -62,13 +62,13 @@ const MyList = () => {
   // Convert MyListItem to the format expected by MovieGrid
   const formattedItems = myListItems.map(item => ({
     id: item.tmdb_id,
-    title: item.title,
-    name: item.title,
+    title: item.media_type === 'movie' ? item.title : undefined,
+    name: item.media_type === 'tv' ? item.title : undefined,
     poster_path: item.poster_path,
     backdrop_path: item.backdrop_path,
     vote_average: item.vote_average,
-    release_date: item.release_date,
-    first_air_date: item.release_date,
+    release_date: item.media_type === 'movie' ? item.release_date : undefined,
+    first_air_date: item.media_type === 'tv' ? item.release_date : undefined,
     media_type: item.media_type,
     genre_ids: item.genre_ids || []
   }));
@@ -93,7 +93,10 @@ const MyList = () => {
                 {myListItems.length} {myListItems.length === 1 ? 'Item' : 'Items'} in Your List
               </h2>
             </div>
-            <MovieGrid movies={formattedItems} type="movie" />
+            <MovieGrid 
+              movies={formattedItems} 
+              type={formattedItems.length > 0 ? (formattedItems[0].media_type as 'movie' | 'tv') : 'movie'} 
+            />
           </>
         )}
       </main>

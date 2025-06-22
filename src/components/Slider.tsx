@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useMyList } from '../hooks/useMyList';
 
@@ -144,7 +143,7 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
               alt={item.title || item.name}
               className="w-full h-80 md:h-[80vh] object-cover object-top"
             />
-            <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent pb-16">
               <h2 className="text-3xl font-bold mb-3 drop-shadow-lg text-white">
                 {item.title || item.name}
               </h2>
@@ -190,19 +189,19 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
       {/* Navigation arrows */}
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
       >
         ←
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
       >
         →
       </button>
       
-      {/* Dot indicators */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+      {/* Dot indicators - moved to bottom center */}
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
         {data.map((_, index) => (
           <button
             key={index}
