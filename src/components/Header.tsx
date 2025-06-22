@@ -1,15 +1,20 @@
 
 import React, { useState } from 'react';
-import { Search, Menu, Filter, User, LogIn } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Menu, Filter, User, LogIn, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import SearchResults from './SearchResults';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchFilter, setSearchFilter] = useState('all');
+  
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
 
@@ -38,6 +43,12 @@ const Header = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    setIsProfileOpen(false);
+    navigate('/');
+  };
+
   return (
     <header className="w-full bg-gray-900 relative z-50">
       <nav className="flex items-center justify-between p-4">
@@ -63,13 +74,54 @@ const Header = () => {
             <Filter className="w-5 h-5 text-white" />
           </Link>
 
-          <button className="p-2 hover:bg-gray-800 rounded">
-            <LogIn className="w-5 h-5 text-white" />
-          </button>
-
-          <button className="p-2 hover:bg-gray-800 rounded">
-            <User className="w-5 h-5 text-white" />
-          </button>
+          {user ? (
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="p-2 hover:bg-gray-800 rounded flex items-center gap-2"
+              >
+                <User className="w-5 h-5 text-white" />
+                <span className="text-white text-sm hidden md:block">
+                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                </span>
+              </button>
+              
+              {isProfileOpen && (
+                <div className="absolute top-12 right-0 bg-gray-800 rounded-lg p-3 w-48 z-40">
+                  <div className="flex flex-col gap-2">
+                    <div className="px-3 py-2 border-b border-gray-700">
+                      <p className="text-white font-medium">
+                        {user.user_metadata?.full_name || 'User'}
+                      </p>
+                      <p className="text-gray-400 text-sm">{user.email}</p>
+                    </div>
+                    <Link
+                      to="/my-list"
+                      className="block px-3 py-2 text-white hover:bg-gray-700 rounded"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      My List
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2 px-3 py-2 text-white hover:bg-gray-700 rounded w-full text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -81,7 +133,7 @@ const Header = () => {
             <li><Link to="/movies" className="block text-black hover:underline">Movies</Link></li>
             <li><Link to="/tv" className="block text-black hover:underline">TV Shows</Link></li>
             <li><Link to="/filters" className="block text-black hover:underline">Filters</Link></li>
-            <li><Link to="/mylist" className="block text-black hover:underline">My List</Link></li>
+            {user && <li><Link to="/my-list" className="block text-black hover:underline">My List</Link></li>}
           </ul>
         </div>
       )}
