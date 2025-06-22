@@ -28,7 +28,7 @@ interface Actor {
 const MovieWatch = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { addToList, removeFromList, isInList } = useMyList();
+  const { addToMyList, removeFromMyList, isInMyList } = useMyList();
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,10 +73,10 @@ const MovieWatch = () => {
       genre_ids: movieDetails.genres.map(g => g.id)
     };
 
-    if (isInList(movieDetails.id, 'movie')) {
-      await removeFromList(movieDetails.id, 'movie');
+    if (isInMyList(movieDetails.id, 'movie')) {
+      await removeFromMyList(movieDetails.id, 'movie');
     } else {
-      await addToList(movieItem);
+      await addToMyList(movieItem);
     }
   };
 
@@ -163,13 +163,13 @@ const MovieWatch = () => {
                   <button
                     onClick={handleAddToList}
                     className={`flex items-center gap-2 px-4 py-2 rounded transition-colors mb-4 ${
-                      isInList(movieDetails.id, 'movie')
+                      isInMyList(movieDetails.id, 'movie')
                         ? 'bg-green-600 hover:bg-green-700 text-white'
                         : 'bg-yellow-400 hover:bg-yellow-500 text-black'
                     }`}
                   >
                     <Plus className="w-4 h-4" />
-                    {isInList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
+                    {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
                   </button>
                 )}
 

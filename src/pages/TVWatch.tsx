@@ -34,7 +34,7 @@ interface Actor {
 const TVWatch = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const { addToList, removeFromList, isInList } = useMyList();
+  const { addToMyList, removeFromMyList, isInMyList } = useMyList();
   const [currentSeason, setCurrentSeason] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(1);
   const [tvDetails, setTVDetails] = useState<TVDetails | null>(null);
@@ -91,10 +91,10 @@ const TVWatch = () => {
       genre_ids: tvDetails.genres.map(g => g.id)
     };
 
-    if (isInList(tvDetails.id, 'tv')) {
-      await removeFromList(tvDetails.id, 'tv');
+    if (isInMyList(tvDetails.id, 'tv')) {
+      await removeFromMyList(tvDetails.id, 'tv');
     } else {
-      await addToList(tvItem);
+      await addToMyList(tvItem);
     }
   };
 
@@ -235,13 +235,13 @@ const TVWatch = () => {
                   <button
                     onClick={handleAddToList}
                     className={`flex items-center gap-2 px-4 py-2 rounded transition-colors mb-4 ${
-                      isInList(tvDetails.id, 'tv')
+                      isInMyList(tvDetails.id, 'tv')
                         ? 'bg-green-600 hover:bg-green-700 text-white'
                         : 'bg-yellow-400 hover:bg-yellow-500 text-black'
                     }`}
                   >
                     <Plus className="w-4 h-4" />
-                    {isInList(tvDetails.id, 'tv') ? 'In My List' : 'Add to List'}
+                    {isInMyList(tvDetails.id, 'tv') ? 'In My List' : 'Add to List'}
                   </button>
                 )}
 
