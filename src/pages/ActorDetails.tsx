@@ -173,7 +173,7 @@ const ActorDetails = () => {
         {allCredits.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-6">Known For</h2>
-            <MovieGrid movies={allCredits} />
+            <MovieGrid movies={allCredits} type="movie" />
           </div>
         )}
       </main>
