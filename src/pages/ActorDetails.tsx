@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Calendar, MapPin, Star } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import Header from '../components/Header';
 import MovieGrid from '../components/MovieGrid';
 
@@ -33,8 +33,7 @@ interface Movie {
 const ActorDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [actorDetails, setActorDetails] = useState<ActorDetails | null>(null);
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [tvShows, setTVShows] = useState<Movie[]>([]);
+  const [allCredits, setAllCredits] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
@@ -55,19 +54,12 @@ const ActorDetails = () => {
         );
         const creditsData = await creditsResponse.json();
         
-        // Separate movies and TV shows
-        const movieCredits = creditsData.cast
-          ?.filter((item: Movie) => item.media_type === 'movie')
+        // Combine movies and TV shows, sort by popularity
+        const combinedCredits = creditsData.cast
           ?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0))
-          ?.slice(0, 12) || [];
-          
-        const tvCredits = creditsData.cast
-          ?.filter((item: Movie) => item.media_type === 'tv')
-          ?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0))
-          ?.slice(0, 12) || [];
+          ?.slice(0, 24) || [];
         
-        setMovies(movieCredits);
-        setTVShows(tvCredits);
+        setAllCredits(combinedCredits);
       } catch (error) {
         console.error('Error fetching actor data:', error);
       } finally {
@@ -132,11 +124,6 @@ const ActorDetails = () => {
             <h1 className="text-4xl font-bold text-white mb-4">{actorDetails.name}</h1>
 
             <div className="flex items-center gap-4 mb-4 text-gray-300">
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 text-yellow-400" />
-                <span>Popularity: {actorDetails.popularity.toFixed(1)}</span>
-              </div>
-              
               {actorDetails.birthday && (
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
@@ -182,19 +169,11 @@ const ActorDetails = () => {
           </div>
         </div>
 
-        {/* Movies Section */}
-        {movies.length > 0 && (
+        {/* Known For Section */}
+        {allCredits.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Known For - Movies</h2>
-            <MovieGrid movies={movies} type="movie" />
-          </div>
-        )}
-
-        {/* TV Shows Section */}
-        {tvShows.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Known For - TV Shows</h2>
-            <MovieGrid movies={tvShows} type="tv" />
+            <h2 className="text-2xl font-bold text-white mb-6">Known For</h2>
+            <MovieGrid movies={allCredits} />
           </div>
         )}
       </main>
