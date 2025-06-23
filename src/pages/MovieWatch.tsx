@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, Calendar, Clock, Plus } from 'lucide-react';
+import { Star, Calendar, Plus } from 'lucide-react';
 import Header from '../components/Header';
 import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyList } from '../hooks/useMyList';
+import { useToast } from '../hooks/use-toast';
 
 interface MovieDetails {
   id: number;
@@ -14,8 +15,8 @@ interface MovieDetails {
   poster_path: string;
   backdrop_path: string;
   release_date: string;
-  runtime: number;
   vote_average: number;
+  runtime: number;
   genres: { id: number; name: string }[];
 }
 
@@ -30,6 +31,7 @@ const MovieWatch = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { addToMyList, removeFromMyList, isInMyList } = useMyList();
+  const { toast } = useToast();
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,8 +78,16 @@ const MovieWatch = () => {
 
     if (isInMyList(movieDetails.id, 'movie')) {
       await removeFromMyList(movieDetails.id, 'movie');
+      toast({
+        title: "Removed from list",
+        description: `${movieDetails.title} has been removed from your list.`,
+      });
     } else {
       await addToMyList(movieItem);
+      toast({
+        title: "Added to list",
+        description: `${movieDetails.title} has been added to your list.`,
+      });
     }
   };
 
@@ -116,7 +126,7 @@ const MovieWatch = () => {
             title="Movie Player"
           />
         </div>
-
+        
         {/* Movie Details */}
         <div className="bg-gray-800 p-6">
           <div className="container mx-auto">
@@ -134,10 +144,7 @@ const MovieWatch = () => {
                     <Calendar className="w-4 h-4" />
                     <span>{new Date(movieDetails.release_date).getFullYear()}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    <span>{movieDetails.runtime} min</span>
-                  </div>
+                  <span>{movieDetails.runtime} min</span>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-4">
@@ -155,24 +162,30 @@ const MovieWatch = () => {
                   {user && (
                     <button
                       onClick={handleAddToList}
-                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors min-w-[140px] justify-center ${
                         isInMyList(movieDetails.id, 'movie')
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-yellow-400 hover:bg-yellow-500 text-black'
                       }`}
                     >
                       <Plus className="w-4 h-4" />
-                      {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
+                      <span className="whitespace-nowrap">
+                        {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
+                      </span>
                     </button>
                   )}
                   
-                  <TrailerDialog movieId={movieDetails.id} movieTitle={movieDetails.title} />
+                  <TrailerDialog 
+                    movieId={movieDetails.id} 
+                    movieTitle={movieDetails.title}
+                    mediaType="movie"
+                  />
                 </div>
 
                 <p className="text-gray-300 leading-relaxed">{movieDetails.overview}</p>
               </div>
 
-              {/* Poster - moved after details */}
+              {/* Poster */}
               <div className="flex-shrink-0">
                 <img
                   src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
@@ -191,10 +204,10 @@ const MovieWatch = () => {
               <h2 className="text-2xl font-bold text-white mb-6">Cast</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {actors.map(actor => (
-                  <Link
-                    key={actor.id}
+                  <Link 
+                    key={actor.id} 
                     to={`/actor/${actor.id}`}
-                    className="text-center hover:transform hover:scale-105 transition-transform"
+                    className="text-center hover:bg-gray-800 p-2 rounded transition-colors"
                   >
                     <img
                       src={

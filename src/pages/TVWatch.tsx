@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Plus } from 'lucide-react';
 import Header from '../components/Header';
+import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyList } from '../hooks/useMyList';
+import { useToast } from '../hooks/use-toast';
 
 interface TVDetails {
   id: number;
@@ -35,6 +37,7 @@ const TVWatch = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const { addToMyList, removeFromMyList, isInMyList } = useMyList();
+  const { toast } = useToast();
   const [currentSeason, setCurrentSeason] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(1);
   const [tvDetails, setTVDetails] = useState<TVDetails | null>(null);
@@ -93,8 +96,16 @@ const TVWatch = () => {
 
     if (isInMyList(tvDetails.id, 'tv')) {
       await removeFromMyList(tvDetails.id, 'tv');
+      toast({
+        title: "Removed from list",
+        description: `${tvDetails.name} has been removed from your list.`,
+      });
     } else {
       await addToMyList(tvItem);
+      toast({
+        title: "Added to list",
+        description: `${tvDetails.name} has been added to your list.`,
+      });
     }
   };
 
@@ -195,15 +206,6 @@ const TVWatch = () => {
         <div className="bg-gray-800 p-6">
           <div className="container mx-auto">
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Poster */}
-              <div className="flex-shrink-0">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${tvDetails.poster_path}`}
-                  alt={tvDetails.name}
-                  className="w-48 h-72 object-cover rounded-lg"
-                />
-              </div>
-
               {/* Details */}
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-white mb-4">{tvDetails.name}</h1>
@@ -231,21 +233,40 @@ const TVWatch = () => {
                   ))}
                 </div>
 
-                {user && (
-                  <button
-                    onClick={handleAddToList}
-                    className={`flex items-center gap-2 px-4 py-2 rounded transition-colors mb-4 ${
-                      isInMyList(tvDetails.id, 'tv')
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-yellow-400 hover:bg-yellow-500 text-black'
-                    }`}
-                  >
-                    <Plus className="w-4 h-4" />
-                    {isInMyList(tvDetails.id, 'tv') ? 'In My List' : 'Add to List'}
-                  </button>
-                )}
+                <div className="flex gap-4 mb-4">
+                  {user && (
+                    <button
+                      onClick={handleAddToList}
+                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors min-w-[140px] justify-center ${
+                        isInMyList(tvDetails.id, 'tv')
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-yellow-400 hover:bg-yellow-500 text-black'
+                      }`}
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span className="whitespace-nowrap">
+                        {isInMyList(tvDetails.id, 'tv') ? 'In My List' : 'Add to List'}
+                      </span>
+                    </button>
+                  )}
+                  
+                  <TrailerDialog 
+                    movieId={tvDetails.id} 
+                    movieTitle={tvDetails.name}
+                    mediaType="tv"
+                  />
+                </div>
 
                 <p className="text-gray-300 leading-relaxed">{tvDetails.overview}</p>
+              </div>
+
+              {/* Poster */}
+              <div className="flex-shrink-0">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${tvDetails.poster_path}`}
+                  alt={tvDetails.name}
+                  className="w-48 h-72 object-cover rounded-lg"
+                />
               </div>
             </div>
           </div>
@@ -258,7 +279,11 @@ const TVWatch = () => {
               <h2 className="text-2xl font-bold text-white mb-6">Cast</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {actors.map(actor => (
-                  <div key={actor.id} className="text-center">
+                  <Link 
+                    key={actor.id} 
+                    to={`/actor/${actor.id}`}
+                    className="text-center hover:bg-gray-800 p-2 rounded transition-colors"
+                  >
                     <img
                       src={
                         actor.profile_path
@@ -270,7 +295,7 @@ const TVWatch = () => {
                     />
                     <h3 className="text-white font-medium text-sm">{actor.name}</h3>
                     <p className="text-gray-400 text-xs">{actor.character}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

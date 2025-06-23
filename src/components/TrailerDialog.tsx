@@ -8,11 +8,12 @@ import {
   DialogTrigger,
 } from './ui/dialog';
 import { Button } from './ui/button';
-import { Play } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 
 interface TrailerDialogProps {
   movieId: number;
   movieTitle: string;
+  mediaType?: 'movie' | 'tv';
 }
 
 interface Video {
@@ -23,7 +24,7 @@ interface Video {
   site: string;
 }
 
-const TrailerDialog: React.FC<TrailerDialogProps> = ({ movieId, movieTitle }) => {
+const TrailerDialog: React.FC<TrailerDialogProps> = ({ movieId, movieTitle, mediaType = 'movie' }) => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -34,7 +35,7 @@ const TrailerDialog: React.FC<TrailerDialogProps> = ({ movieId, movieTitle }) =>
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?api_key=${TMDB_API_KEY}&language=en-US`
       );
       const data = await response.json();
       
@@ -87,8 +88,14 @@ const TrailerDialog: React.FC<TrailerDialogProps> = ({ movieId, movieTitle }) =>
       </DialogTrigger>
       <DialogContent className="max-w-4xl w-full bg-gray-900 border-gray-700">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-white flex items-center justify-between">
             {movieTitle} - Trailer
+            <button
+              onClick={() => setOpen(false)}
+              className="text-gray-400 hover:text-white p-1"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </DialogTitle>
         </DialogHeader>
         <div className="w-full">
