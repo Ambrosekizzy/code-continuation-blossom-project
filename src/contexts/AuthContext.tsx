@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -74,27 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password,
     });
 
-    // If it fails and the input doesn't contain @, try to find user by username
+    // If it fails and the input doesn't contain @, it might be a username
+    // Since the profiles table doesn't have a username column, we'll just return the original error
     if (error && !emailOrUsername.includes('@')) {
-      try {
-        // Use raw query to avoid TypeScript inference issues
-        const { data, error: queryError } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('username', emailOrUsername)
-          .limit(1);
-
-        if (!queryError && data && data.length > 0 && data[0].email) {
-          const loginAttempt = await supabase.auth.signInWithPassword({
-            email: data[0].email,
-            password,
-          });
-          error = loginAttempt.error;
-        }
-      } catch (usernameError) {
-        // Keep the original error if username lookup fails
-        console.error('Username lookup failed:', usernameError);
-      }
+      // For now, we'll just keep the original error since we don't have username support in the database
+      console.log('Username login attempted but not supported in current database schema');
     }
 
     return { error };
