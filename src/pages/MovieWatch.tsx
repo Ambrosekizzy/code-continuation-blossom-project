@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Clock, Plus } from 'lucide-react';
 import Header from '../components/Header';
+import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyList } from '../hooks/useMyList';
 
@@ -120,15 +121,6 @@ const MovieWatch = () => {
         <div className="bg-gray-800 p-6">
           <div className="container mx-auto">
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Poster */}
-              <div className="flex-shrink-0">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
-                  alt={movieDetails.title}
-                  className="w-48 h-72 object-cover rounded-lg"
-                />
-              </div>
-
               {/* Details */}
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-white mb-4">{movieDetails.title}</h1>
@@ -159,21 +151,34 @@ const MovieWatch = () => {
                   ))}
                 </div>
 
-                {user && (
-                  <button
-                    onClick={handleAddToList}
-                    className={`flex items-center gap-2 px-4 py-2 rounded transition-colors mb-4 ${
-                      isInMyList(movieDetails.id, 'movie')
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-yellow-400 hover:bg-yellow-500 text-black'
-                    }`}
-                  >
-                    <Plus className="w-4 h-4" />
-                    {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
-                  </button>
-                )}
+                <div className="flex gap-4 mb-4">
+                  {user && (
+                    <button
+                      onClick={handleAddToList}
+                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
+                        isInMyList(movieDetails.id, 'movie')
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-yellow-400 hover:bg-yellow-500 text-black'
+                      }`}
+                    >
+                      <Plus className="w-4 h-4" />
+                      {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
+                    </button>
+                  )}
+                  
+                  <TrailerDialog movieId={movieDetails.id} movieTitle={movieDetails.title} />
+                </div>
 
                 <p className="text-gray-300 leading-relaxed">{movieDetails.overview}</p>
+              </div>
+
+              {/* Poster - moved after details */}
+              <div className="flex-shrink-0">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
+                  alt={movieDetails.title}
+                  className="w-48 h-72 object-cover rounded-lg"
+                />
               </div>
             </div>
           </div>
@@ -186,7 +191,11 @@ const MovieWatch = () => {
               <h2 className="text-2xl font-bold text-white mb-6">Cast</h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {actors.map(actor => (
-                  <div key={actor.id} className="text-center">
+                  <Link
+                    key={actor.id}
+                    to={`/actor/${actor.id}`}
+                    className="text-center hover:transform hover:scale-105 transition-transform"
+                  >
                     <img
                       src={
                         actor.profile_path
@@ -198,7 +207,7 @@ const MovieWatch = () => {
                     />
                     <h3 className="text-white font-medium text-sm">{actor.name}</h3>
                     <p className="text-gray-400 text-xs">{actor.character}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
