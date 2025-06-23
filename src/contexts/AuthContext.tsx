@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,14 +77,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // If it fails and the input doesn't contain @, try to find user by username
     if (error && !emailOrUsername.includes('@')) {
       try {
-        // Use a more basic query structure to avoid deep type inference
-        const profilesTable = supabase.from('profiles');
-        const query = profilesTable.select('email').eq('username', emailOrUsername);
-        const result = await query.maybeSingle();
+        // Use raw query to avoid TypeScript inference issues
+        const { data, error: queryError } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', emailOrUsername)
+          .limit(1);
 
-        if (!result.error && result.data?.email) {
+        if (!queryError && data && data.length > 0 && data[0].email) {
           const loginAttempt = await supabase.auth.signInWithPassword({
-            email: result.data.email,
+            email: data[0].email,
             password,
           });
           error = loginAttempt.error;
