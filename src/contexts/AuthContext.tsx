@@ -76,16 +76,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // If it fails and the input doesn't contain @, try to find user by username
     if (error && !emailOrUsername.includes('@')) {
       try {
-        // Explicitly type the response to avoid infinite type recursion
-        const response: { data: { email: string } | null; error: any } = await supabase
-          .from('profiles')
-          .select('email')
-          .eq('username', emailOrUsername)
-          .single();
+        // Use a more basic query structure to avoid deep type inference
+        const profilesTable = supabase.from('profiles');
+        const query = profilesTable.select('email').eq('username', emailOrUsername);
+        const result = await query.maybeSingle();
 
-        if (!response.error && response.data?.email) {
+        if (!result.error && result.data?.email) {
           const loginAttempt = await supabase.auth.signInWithPassword({
-            email: response.data.email,
+            email: result.data.email,
             password,
           });
           error = loginAttempt.error;
