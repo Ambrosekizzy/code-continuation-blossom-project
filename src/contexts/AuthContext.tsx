@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,18 +77,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // If it fails and the input doesn't contain @, try to find user by username
     if (error && !emailOrUsername.includes('@')) {
       try {
-        const { data: profile, error: profileError } = await supabase
+        const profileQuery = await supabase
           .from('profiles')
           .select('email')
           .eq('username', emailOrUsername)
           .single();
 
-        if (!profileError && profile?.email) {
-          const result = await supabase.auth.signInWithPassword({
-            email: profile.email,
-            password,
-          });
-          error = result.error;
+        if (!profileQuery.error && profileQuery.data) {
+          const userEmail = profileQuery.data.email;
+          if (userEmail) {
+            const loginResult = await supabase.auth.signInWithPassword({
+              email: userEmail,
+              password,
+            });
+            error = loginResult.error;
+          }
         }
       } catch (usernameError) {
         // Keep the original error if username lookup fails
