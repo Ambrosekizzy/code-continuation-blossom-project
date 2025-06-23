@@ -46,7 +46,7 @@ const Header = () => {
   const handleSignOut = async () => {
     await signOut();
     setIsProfileOpen(false);
-    navigate('/');
+    window.location.reload();
   };
 
   return (
@@ -93,7 +93,6 @@ const Header = () => {
                       <p className="text-white font-medium">
                         {user.user_metadata?.username || user.user_metadata?.full_name || 'User'}
                       </p>
-                      <p className="text-gray-400 text-sm">{user.email}</p>
                     </div>
                     <Link
                       to="/profile"
