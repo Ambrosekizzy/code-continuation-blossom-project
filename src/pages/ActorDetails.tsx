@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Calendar, MapPin, Star } from 'lucide-react';
@@ -27,6 +26,7 @@ interface Movie {
   media_type?: string;
   character?: string;
   job?: string;
+  popularity?: number;
 }
 
 const ActorDetails = () => {
