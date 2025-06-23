@@ -59,7 +59,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         emailRedirectTo: redirectUrl,
         data: {
           username: username,
-          full_name: username,
         }
       }
     });
@@ -67,20 +66,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (emailOrUsername: string, password: string) => {
-    // Try to sign in with email first
-    let { error } = await supabase.auth.signInWithPassword({
-      email: emailOrUsername,
-      password,
-    });
-
-    // If it fails and the input doesn't contain @, it might be a username
-    // Since the profiles table doesn't have a username column, we'll just return the original error
-    if (error && !emailOrUsername.includes('@')) {
-      // For now, we'll just keep the original error since we don't have username support in the database
-      console.log('Username login attempted but not supported in current database schema');
+    // If the input contains @, treat it as email
+    if (emailOrUsername.includes('@')) {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailOrUsername,
+        password,
+      });
+      return { error };
     }
+    
+    // Otherwise, treat it as username and look up the email in profiles
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('full_name', emailOrUsername) // Using full_name as username field for now
+        .single();
 
-    return { error };
+      if (profileError || !profile?.email) {
+        return { error: { message: 'Username not found' } };
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: profile.email,
+        password,
+      });
+      return { error };
+    } catch (error) {
+      return { error: { message: 'Failed to sign in with username' } };
+    }
   };
 
   const signInWithGoogle = async () => {

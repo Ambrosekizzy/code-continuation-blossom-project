@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
 import Header from '../components/Header';
 import MovieGrid from '../components/MovieGrid';
+import { Button } from '../components/ui/button';
 
 interface ActorDetails {
   id: number;
@@ -14,7 +14,6 @@ interface ActorDetails {
   place_of_birth: string;
   profile_path: string;
   known_for_department: string;
-  popularity: number;
 }
 
 interface Movie {
@@ -34,9 +33,13 @@ const ActorDetails = () => {
   const { id } = useParams<{ id: string }>();
   const [actorDetails, setActorDetails] = useState<ActorDetails | null>(null);
   const [allCredits, setAllCredits] = useState<Movie[]>([]);
+  const [displayedCredits, setDisplayedCredits] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
+  const ITEMS_PER_LOAD = 24;
 
   useEffect(() => {
     const fetchActorData = async () => {
@@ -56,10 +59,11 @@ const ActorDetails = () => {
         
         // Combine movies and TV shows, sort by popularity
         const combinedCredits = creditsData.cast
-          ?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0))
-          ?.slice(0, 24) || [];
+          ?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0)) || [];
         
         setAllCredits(combinedCredits);
+        setDisplayedCredits(combinedCredits.slice(0, ITEMS_PER_LOAD));
+        setHasMore(combinedCredits.length > ITEMS_PER_LOAD);
       } catch (error) {
         console.error('Error fetching actor data:', error);
       } finally {
@@ -71,6 +75,19 @@ const ActorDetails = () => {
       fetchActorData();
     }
   }, [id]);
+
+  const loadMore = () => {
+    if (loadingMore || !hasMore) return;
+    
+    setLoadingMore(true);
+    setTimeout(() => {
+      const currentLength = displayedCredits.length;
+      const nextItems = allCredits.slice(currentLength, currentLength + ITEMS_PER_LOAD);
+      setDisplayedCredits(prev => [...prev, ...nextItems]);
+      setHasMore(currentLength + nextItems.length < allCredits.length);
+      setLoadingMore(false);
+    }, 500);
+  };
 
   if (loading) {
     return (
@@ -169,11 +186,23 @@ const ActorDetails = () => {
           </div>
         </div>
 
-        {/* Known For Section */}
-        {allCredits.length > 0 && (
+        {/* Known For Section with Infinite Scroll */}
+        {displayedCredits.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-6">Known For</h2>
-            <MovieGrid movies={allCredits} type="movie" />
+            <MovieGrid movies={displayedCredits} type="movie" />
+            
+            {hasMore && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-black px-8 py-2"
+                >
+                  {loadingMore ? 'Loading...' : 'Load More'}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </main>

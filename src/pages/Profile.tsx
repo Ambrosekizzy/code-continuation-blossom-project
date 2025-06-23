@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -17,7 +16,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState({
     email: '',
-    full_name: '',
     username: '',
   });
   const [passwords, setPasswords] = useState({
@@ -30,7 +28,6 @@ const Profile = () => {
     if (user) {
       setProfile({
         email: user.email || '',
-        full_name: user.user_metadata?.full_name || '',
         username: user.user_metadata?.username || '',
       });
     }
@@ -43,7 +40,6 @@ const Profile = () => {
     try {
       const { error } = await supabase.auth.updateUser({
         data: {
-          full_name: profile.full_name,
           username: profile.username,
         }
       });
@@ -196,18 +192,6 @@ const Profile = () => {
                     />
                   </div>
                   <p className="text-xs text-gray-400">Email cannot be changed</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="full_name" className="text-gray-300">Full Name</Label>
-                  <Input
-                    id="full_name"
-                    type="text"
-                    value={profile.full_name}
-                    onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="Enter your full name"
-                  />
                 </div>
 
                 <div className="space-y-2">
