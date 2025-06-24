@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import Header from '../components/Header';
-import MyListItem from '../components/MyListItem';
+import MovieGrid from '../components/MovieGrid';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '../hooks/use-toast';
 
-interface MyListItemType {
+interface MyListItem {
   id: string;
   tmdb_id: number;
   media_type: string;
@@ -23,7 +23,7 @@ interface MyListItemType {
 const MyList = () => {
   const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [myListItems, setMyListItems] = useState<MyListItemType[]>([]);
+  const [myListItems, setMyListItems] = useState<MyListItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,13 +96,18 @@ const MyList = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  // Convert MyListItem to the format expected by MyListItem component
+  // Convert MyListItem to the format expected by MovieGrid
   const formattedItems = myListItems.map(item => ({
     id: item.tmdb_id,
     title: item.media_type === 'movie' ? item.title : undefined,
     name: item.media_type === 'tv' ? item.title : undefined,
     poster_path: item.poster_path,
+    backdrop_path: item.backdrop_path,
+    vote_average: item.vote_average,
+    release_date: item.media_type === 'movie' ? item.release_date : undefined,
+    first_air_date: item.media_type === 'tv' ? item.release_date : undefined,
     media_type: item.media_type,
+    genre_ids: item.genre_ids || []
   }));
 
   return (
@@ -125,15 +130,12 @@ const MyList = () => {
                 {myListItems.length} {myListItems.length === 1 ? 'Item' : 'Items'} in Your List
               </h2>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {formattedItems.map((item) => (
-                <MyListItem
-                  key={`${item.id}-${item.media_type}`}
-                  item={item}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
+            <MovieGrid 
+              movies={formattedItems} 
+              type="movie"
+              onDelete={handleDelete}
+              showDeleteButton={true}
+            />
           </>
         )}
       </main>
