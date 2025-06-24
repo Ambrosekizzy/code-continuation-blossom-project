@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import Header from '../components/Header';
-import MovieGrid from '../components/MovieGrid';
+import MyListItem from '../components/MyListItem';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '../hooks/use-toast';
 
@@ -96,7 +96,7 @@ const MyList = () => {
     return <Navigate to="/auth" replace />;
   }
 
-  // Convert MyListItem to the format expected by MovieGrid
+  // Convert MyListItem to the format expected by MyListItem component
   const formattedItems = myListItems.map(item => ({
     id: item.tmdb_id,
     title: item.media_type === 'movie' ? item.title : undefined,
@@ -130,12 +130,15 @@ const MyList = () => {
                 {myListItems.length} {myListItems.length === 1 ? 'Item' : 'Items'} in Your List
               </h2>
             </div>
-            <MovieGrid 
-              movies={formattedItems} 
-              type="movie"
-              onDelete={handleDelete}
-              showDeleteButton={true}
-            />
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {formattedItems.map((item) => (
+                <MyListItem
+                  key={`${item.id}-${item.media_type}`}
+                  item={item}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
           </>
         )}
       </main>
