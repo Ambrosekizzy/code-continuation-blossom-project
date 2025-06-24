@@ -11,7 +11,6 @@ const Header = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [searchFilter, setSearchFilter] = useState('all');
   
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -26,14 +25,7 @@ const Header = () => {
     }
 
     try {
-      let endpoint = '';
-      if (searchFilter === 'movie') {
-        endpoint = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US`;
-      } else if (searchFilter === 'tv') {
-        endpoint = `https://api.themoviedb.org/3/search/tv?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US`;
-      } else {
-        endpoint = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US`;
-      }
+      const endpoint = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US`;
       
       const response = await fetch(endpoint);
       const data = await response.json();
@@ -157,17 +149,8 @@ const Header = () => {
               onChange={(e) => handleSearch(e.target.value)}
               autoFocus
             />
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-gray-900 px-2 py-1 rounded-xl flex items-center gap-2">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
               <Search className="w-4 h-4 text-white" />
-              <select 
-                value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
-                className="text-xs font-bold text-white bg-transparent outline-none"
-              >
-                <option value="all" className="text-black">All</option>
-                <option value="movie" className="text-black">Movies</option>
-                <option value="tv" className="text-black">TV</option>
-              </select>
             </div>
             
             {searchResults.length > 0 && (

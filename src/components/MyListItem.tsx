@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 interface MyListItemProps {
   item: {
@@ -58,7 +58,7 @@ const MyListItem = ({ item, onDelete }: MyListItemProps) => {
               className="absolute bottom-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 transition-colors duration-200 shadow-lg z-10"
               title="Remove from My List"
             >
-              <X className="w-4 h-4" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
 
