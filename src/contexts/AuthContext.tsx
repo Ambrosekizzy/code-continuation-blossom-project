@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -50,7 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, username?: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}${window.location.pathname}`;
     
     const { error } = await supabase.auth.signUp({
       email,
@@ -80,7 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('email')
-        .eq('full_name', emailOrUsername) // Using full_name as username field for now
+        .eq('full_name', emailOrUsername)
         .single();
 
       if (profileError || !profile?.email) {
@@ -98,10 +99,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signInWithGoogle = async () => {
+    const redirectUrl = `${window.location.origin}${window.location.pathname}`;
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: redirectUrl
       }
     });
     return { error };

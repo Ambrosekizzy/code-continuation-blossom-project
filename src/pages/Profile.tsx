@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -14,59 +15,11 @@ const Profile = () => {
   const { user, loading: authLoading, updatePassword } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState({
-    email: '',
-    username: '',
-  });
   const [passwords, setPasswords] = useState({
     current: '',
     new: '',
     confirm: '',
   });
-
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        email: user.email || '',
-        username: user.user_metadata?.username || '',
-      });
-    }
-  }, [user]);
-
-  const handleProfileUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          username: profile.username,
-        }
-      });
-
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Success",
-          description: "Profile updated successfully!",
-        });
-      }
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,43 +130,34 @@ const Profile = () => {
                 User Details
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleProfileUpdate} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-300">Email</Label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={profile.email}
-                      disabled
-                      className="pl-10 bg-gray-700 border-gray-600 text-gray-300"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-400">Email cannot be changed</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="username" className="text-gray-300">Username</Label>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-300">Email</Label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="username"
-                    type="text"
-                    value={profile.username}
-                    onChange={(e) => setProfile({ ...profile, username: e.target.value })}
-                    className="bg-gray-700 border-gray-600 text-white"
-                    placeholder="Enter your username"
+                    id="email"
+                    type="email"
+                    value={user.email || ''}
+                    disabled
+                    className="pl-10 bg-gray-700 border-gray-600 text-gray-300"
                   />
                 </div>
+                <p className="text-xs text-gray-400">Email is permanent and cannot be changed</p>
+              </div>
 
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-black"
-                >
-                  {loading ? 'Updating...' : 'Update Profile'}
-                </Button>
-              </form>
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-gray-300">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={user.user_metadata?.username || user.user_metadata?.full_name || ''}
+                  disabled
+                  className="bg-gray-700 border-gray-600 text-gray-300"
+                  placeholder="Username"
+                />
+                <p className="text-xs text-gray-400">Username is permanent and cannot be changed</p>
+              </div>
             </CardContent>
           </Card>
 
