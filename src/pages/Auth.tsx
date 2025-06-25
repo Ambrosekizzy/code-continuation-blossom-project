@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { useToast } from '../hooks/use-toast';
 
 const Auth = () => {
-  const { user, signIn, signUp, signInWithGoogle, resetPassword } = useAuth();
+  const { user, signIn, signUp, resetPassword } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [resetMode, setResetMode] = useState(false);
@@ -70,32 +70,6 @@ const Auth = () => {
       toast({
         title: "Account created!",
         description: "Please check your email to verify your account.",
-      });
-    }
-    
-    setLoading(false);
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    
-    try {
-      const { error } = await signInWithGoogle();
-      
-      if (error) {
-        console.error('Google sign-in error:', error);
-        toast({
-          title: "Google Sign-In Not Available",
-          description: "Google authentication is not configured. Please use email/password to sign in.",
-          variant: "destructive",
-        });
-      }
-    } catch (err) {
-      console.error('Google sign-in error:', err);
-      toast({
-        title: "Google Sign-In Error",
-        description: "Unable to sign in with Google. Please try email/password instead.",
-        variant: "destructive",
       });
     }
     
@@ -189,23 +163,6 @@ const Auth = () => {
             </TabsList>
             
             <TabsContent value="signin" className="space-y-4">
-              <Button 
-                onClick={handleGoogleSignIn} 
-                disabled={loading}
-                className="w-full bg-white text-black hover:bg-gray-100"
-              >
-                Continue with Google
-              </Button>
-              
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-600" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-800 px-2 text-gray-400">Or continue with</span>
-                </div>
-              </div>
-              
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div>
                   <Label htmlFor="signin-email" className="text-white">Email or Username</Label>
@@ -244,23 +201,6 @@ const Auth = () => {
             </TabsContent>
             
             <TabsContent value="signup" className="space-y-4">
-              <Button 
-                onClick={handleGoogleSignIn} 
-                disabled={loading}
-                className="w-full bg-white text-black hover:bg-gray-100"
-              >
-                Continue with Google
-              </Button>
-              
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-600" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-gray-800 px-2 text-gray-400">Or continue with</span>
-                </div>
-              </div>
-              
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div>
                   <Label htmlFor="signup-username" className="text-white">Username</Label>
