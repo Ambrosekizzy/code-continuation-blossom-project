@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -156,7 +155,6 @@ const Profile = () => {
                     className="pl-10 bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                   />
                 </div>
-                <p className="text-xs text-gray-400">Email is permanent and cannot be changed</p>
               </div>
 
               <div className="space-y-2">
@@ -169,8 +167,11 @@ const Profile = () => {
                   className="bg-gray-700 border-gray-600 text-gray-300 cursor-not-allowed"
                   placeholder="Username not set"
                 />
-                <p className="text-xs text-gray-400">Username is permanent and cannot be changed</p>
               </div>
+
+              <p className="text-xs text-gray-400">
+                Email and username are permanent and cannot be changed
+              </p>
             </CardContent>
           </Card>
 

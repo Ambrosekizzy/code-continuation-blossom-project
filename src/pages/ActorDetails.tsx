@@ -57,13 +57,18 @@ const ActorDetails = () => {
         );
         const creditsData = await creditsResponse.json();
         
-        // Combine movies and TV shows, sort by popularity
-        const combinedCredits = creditsData.cast
-          ?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0)) || [];
+        // Remove duplicates based on tmdb id and media type, then sort by popularity
+        const uniqueCredits = creditsData.cast?.reduce((acc: Movie[], current: Movie) => {
+          const exists = acc.find(item => item.id === current.id && item.media_type === current.media_type);
+          if (!exists) {
+            acc.push(current);
+          }
+          return acc;
+        }, [])?.sort((a: Movie, b: Movie) => (b.popularity || 0) - (a.popularity || 0)) || [];
         
-        setAllCredits(combinedCredits);
-        setDisplayedCredits(combinedCredits.slice(0, ITEMS_PER_LOAD));
-        setHasMore(combinedCredits.length > ITEMS_PER_LOAD);
+        setAllCredits(uniqueCredits);
+        setDisplayedCredits(uniqueCredits.slice(0, ITEMS_PER_LOAD));
+        setHasMore(uniqueCredits.length > ITEMS_PER_LOAD);
       } catch (error) {
         console.error('Error fetching actor data:', error);
       } finally {
