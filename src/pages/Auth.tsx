@@ -78,12 +78,23 @@ const Auth = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const { error } = await signInWithGoogle();
     
-    if (error) {
+    try {
+      const { error } = await signInWithGoogle();
+      
+      if (error) {
+        console.error('Google sign-in error:', error);
+        toast({
+          title: "Google Sign-In Not Available",
+          description: "Google authentication is not configured. Please use email/password to sign in.",
+          variant: "destructive",
+        });
+      }
+    } catch (err) {
+      console.error('Google sign-in error:', err);
       toast({
-        title: "Error signing in with Google",
-        description: error.message,
+        title: "Google Sign-In Error",
+        description: "Unable to sign in with Google. Please try email/password instead.",
         variant: "destructive",
       });
     }
