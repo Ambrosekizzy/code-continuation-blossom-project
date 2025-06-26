@@ -34,7 +34,7 @@ const MyListItem = ({ item, onDelete }: MyListItemProps) => {
   return (
     <div className="group relative">
       <Link
-        to={item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`}
+        to={item.media_type === 'movie' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
         className="block"
       >
         <div className="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform duration-200 hover:scale-105">
