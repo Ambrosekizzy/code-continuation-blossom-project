@@ -184,7 +184,7 @@ const TVWatch = () => {
                 </div>
               </div>
               <p className="text-gray-400 text-sm text-center font-bold">
-                If a server doesn't work, try switching to another one
+                If a server don't work, switch to another
               </p>
             </div>
           </div>
