@@ -165,7 +165,7 @@ const MovieWatch = () => {
                   ))}
                 </div>
               </div>
-              <p className="text-gray-400 text-sm text-center">
+              <p className="text-gray-400 text-sm text-center font-bold">
                 If a server doesn't work, try switching to another one
               </p>
             </div>
