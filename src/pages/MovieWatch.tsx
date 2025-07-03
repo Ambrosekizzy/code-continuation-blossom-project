@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Plus } from 'lucide-react';
@@ -34,7 +35,9 @@ const MovieWatch = () => {
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedServer, setSelectedServer] = useState('autoembed');
+  const [selectedServer, setSelectedServer] = useState(() => {
+    return localStorage.getItem('selectedServer') || 'autoembed';
+  });
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
 
@@ -67,6 +70,11 @@ const MovieWatch = () => {
       fetchMovieData();
     }
   }, [id]);
+
+  const handleServerChange = (serverId: string) => {
+    setSelectedServer(serverId);
+    localStorage.setItem('selectedServer', serverId);
+  };
 
   const handleAddToList = async () => {
     if (!movieDetails || !user) return;
@@ -138,23 +146,28 @@ const MovieWatch = () => {
         {/* Server Selection */}
         <div className="bg-gray-800 p-4 border-b border-gray-700">
           <div className="container mx-auto">
-            <div className="flex items-center gap-4">
-              <span className="text-white text-sm font-medium">Server:</span>
-              <div className="flex gap-2">
-                {servers.map(server => (
-                  <button
-                    key={server.id}
-                    onClick={() => setSelectedServer(server.id)}
-                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                      selectedServer === server.id
-                        ? 'bg-yellow-400 text-black'
-                        : 'bg-gray-700 text-white hover:bg-gray-600'
-                    }`}
-                  >
-                    {server.name}
-                  </button>
-                ))}
+            <div className="flex flex-col items-center gap-4">
+              <div className="flex items-center gap-4">
+                <span className="text-white text-sm font-medium">Server:</span>
+                <div className="flex gap-2">
+                  {servers.map(server => (
+                    <button
+                      key={server.id}
+                      onClick={() => handleServerChange(server.id)}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        selectedServer === server.id
+                          ? 'bg-yellow-400 text-black'
+                          : 'bg-gray-700 text-white hover:bg-gray-600'
+                      }`}
+                    >
+                      {server.name}
+                    </button>
+                  ))}
+                </div>
               </div>
+              <p className="text-gray-400 text-sm text-center">
+                If a server doesn't work, try switching to another one
+              </p>
             </div>
           </div>
         </div>
