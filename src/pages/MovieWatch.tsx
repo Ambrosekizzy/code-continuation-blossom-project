@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Plus } from 'lucide-react';
@@ -35,8 +34,15 @@ const MovieWatch = () => {
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [actors, setActors] = useState<Actor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedServer, setSelectedServer] = useState('autoembed');
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
+
+  const servers = [
+    { id: 'autoembed', name: 'AutoEmbed', url: `https://autoembed.pro/movie/${id}` },
+    { id: 'vidfast', name: 'VidFast', url: `https://vidfast.pro/movie/${id}` },
+    { id: 'videasy', name: 'Videasy', url: `https://player.videasy.net/movie/${id}` }
+  ];
 
   useEffect(() => {
     const fetchMovieData = async () => {
@@ -113,6 +119,8 @@ const MovieWatch = () => {
     );
   }
 
+  const currentServer = servers.find(server => server.id === selectedServer);
+
   return (
     <div className="min-h-screen bg-gray-900">
       <Header />
@@ -120,11 +128,35 @@ const MovieWatch = () => {
         {/* Video Player */}
         <div className="w-full">
           <iframe
-            src={`https://autoembed.pro/movie/${id}`}
+            src={currentServer?.url}
             className="w-full h-[50vh] border-0"
             allowFullScreen
             title="Movie Player"
           />
+        </div>
+        
+        {/* Server Selection */}
+        <div className="bg-gray-800 p-4 border-b border-gray-700">
+          <div className="container mx-auto">
+            <div className="flex items-center gap-4">
+              <span className="text-white text-sm font-medium">Server:</span>
+              <div className="flex gap-2">
+                {servers.map(server => (
+                  <button
+                    key={server.id}
+                    onClick={() => setSelectedServer(server.id)}
+                    className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                      selectedServer === server.id
+                        ? 'bg-yellow-400 text-black'
+                        : 'bg-gray-700 text-white hover:bg-gray-600'
+                    }`}
+                  >
+                    {server.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
         
         {/* Movie Details */}
