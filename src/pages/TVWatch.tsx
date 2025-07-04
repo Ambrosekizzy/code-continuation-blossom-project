@@ -100,7 +100,7 @@ const TVWatch = () => {
       <Header />
       <main className="w-full">
         {/* Video Player */}
-        <div className="w-full" style={{ height: '80vh' }}>
+        <div className="w-full h-[80vh]">
           <iframe
             src={currentServer?.url}
             className="w-full h-full border-0"
@@ -195,7 +195,7 @@ const TVWatch = () => {
               </button>
 
               <p className="text-gray-400 text-sm text-center font-bold">
-                If a server does'nt work, switch to another
+                If a server doesn't work, switch to another
               </p>
             </div>
           </div>

@@ -1,5 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Info, Play } from 'lucide-react';
 import { useMyList } from '../hooks/useMyList';
 
 interface SliderItem {
@@ -165,12 +167,20 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
                 {item.genre_ids.map(id => getGenreName(id)).join(', ')}
               </div>
               <div className="flex gap-3">
-                <a
-                  href={item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`}
-                  className="bg-white text-black px-5 py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black"
+                <Link
+                  to={item.media_type === 'movie' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
+                  className="flex items-center gap-2 bg-white text-black px-5 py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black"
                 >
-                  ▶ Play
-                </a>
+                  <Play className="w-4 h-4" />
+                  Play
+                </Link>
+                <Link
+                  to={item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`}
+                  className="flex items-center gap-2 bg-gray-700 text-white px-5 py-3 rounded font-semibold hover:bg-gray-600 transition-colors border-2 border-black"
+                >
+                  <Info className="w-4 h-4" />
+                  Details
+                </Link>
                 <button 
                   onClick={() => toggleMyList(item)}
                   className={`px-5 py-3 rounded font-semibold transition-colors border-2 border-black ${
