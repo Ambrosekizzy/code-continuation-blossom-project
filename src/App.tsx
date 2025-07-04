@@ -5,6 +5,8 @@ import { Toaster } from './components/ui/toaster';
 import Index from './pages/Index';
 import Movies from './pages/Movies';
 import TVShows from './pages/TVShows';
+import MovieDetails from './pages/MovieDetails';
+import TVDetails from './pages/TVDetails';
 import MovieWatch from './pages/MovieWatch';
 import TVWatch from './pages/TVWatch';
 import Filters from './pages/Filters';
@@ -25,6 +27,8 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/tv" element={<TVShows />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
+            <Route path="/tv/:id" element={<TVDetails />} />
             <Route path="/movie/watch/:id" element={<MovieWatch />} />
             <Route path="/tv/watch/:id" element={<TVWatch />} />
             <Route path="/filters" element={<Filters />} />

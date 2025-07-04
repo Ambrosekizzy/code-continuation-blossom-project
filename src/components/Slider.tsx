@@ -166,7 +166,7 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
               </div>
               <div className="flex gap-3">
                 <a
-                  href={item.media_type === 'movie' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
+                  href={item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`}
                   className="bg-white text-black px-5 py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black"
                 >
                   ▶ Play
