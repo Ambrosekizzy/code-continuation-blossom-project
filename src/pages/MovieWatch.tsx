@@ -81,7 +81,7 @@ const MovieWatch = () => {
       <Header />
       <main className="w-full">
         {/* Video Player */}
-        <div className="w-full h-[80vh]">
+        <div className="w-full h-[70vh]">
           <iframe
             src={currentServer?.url}
             className="w-full h-full border-0"
@@ -94,6 +94,10 @@ const MovieWatch = () => {
         <div className="bg-gray-800 p-4">
           <div className="container mx-auto">
             <div className="flex flex-col items-center gap-4">
+              <p className="text-gray-400 text-sm text-center font-bold">
+                If a server doesn't work, switch to another
+              </p>
+
               {/* Server Selection */}
               <div className="flex items-center gap-4">
                 <span className="text-white text-sm font-medium">Server:</span>
@@ -122,10 +126,6 @@ const MovieWatch = () => {
                 <Download className="w-4 h-4" />
                 Download
               </button>
-
-              <p className="text-gray-400 text-sm text-center font-bold">
-                If a server doesn't work, switch to another
-              </p>
             </div>
           </div>
         </div>

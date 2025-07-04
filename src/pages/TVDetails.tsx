@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, Calendar, Plus, Play } from 'lucide-react';
+import { Star, Calendar, Plus, Play, Download, Minus } from 'lucide-react';
 import Header from '../components/Header';
 import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,6 +24,20 @@ interface TVDetails {
 interface Season {
   season_number: number;
   episode_count: number;
+  name: string;
+  overview: string;
+  poster_path: string;
+}
+
+interface Episode {
+  id: number;
+  episode_number: number;
+  name: string;
+  overview: string;
+  still_path: string;
+  vote_average: number;
+  air_date: string;
+  runtime: number;
 }
 
 interface Actor {
@@ -40,6 +54,8 @@ const TVDetails = () => {
   const { toast } = useToast();
   const [tvDetails, setTVDetails] = useState<TVDetails | null>(null);
   const [actors, setActors] = useState<Actor[]>([]);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [selectedSeason, setSelectedSeason] = useState(1);
   const [loading, setLoading] = useState(true);
 
   const TMDB_API_KEY = '54e00466a09676df57ba51c4ca30b1a6';
@@ -67,6 +83,22 @@ const TVDetails = () => {
       fetchTVData();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchEpisodes = async () => {
+      if (!id || !selectedSeason) return;
+      
+      try {
+        const episodesResponse = await fetch(`https://api.themoviedb.org/3/tv/${id}/season/${selectedSeason}?api_key=${TMDB_API_KEY}&language=en-US`);
+        const episodesData = await episodesResponse.json();
+        setEpisodes(episodesData.episodes || []);
+      } catch (error) {
+        console.error('Error fetching episodes:', error);
+      }
+    };
+
+    fetchEpisodes();
+  }, [id, selectedSeason]);
 
   const handleAddToList = async () => {
     if (!tvDetails || !user) return;
@@ -136,16 +168,7 @@ const TVDetails = () => {
         {/* TV Show Details */}
         <div className="bg-gray-900 p-6 -mt-32 relative z-10">
           <div className="container mx-auto">
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Poster */}
-              <div className="flex-shrink-0">
-                <img
-                  src={`https://image.tmdb.org/t/p/w500${tvDetails.poster_path}`}
-                  alt={tvDetails.name}
-                  className="w-48 h-72 object-cover rounded-lg shadow-lg"
-                />
-              </div>
-
+            <div className="flex flex-col gap-6">
               {/* Details */}
               <div className="flex-1">
                 <h1 className="text-4xl font-bold text-white mb-4">{tvDetails.name}</h1>
@@ -176,7 +199,7 @@ const TVDetails = () => {
                 <div className="flex gap-4 mb-6">
                   <Link
                     to={`/tv/watch/${tvDetails.id}`}
-                    className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors"
+                    className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors whitespace-nowrap"
                   >
                     <Play className="w-4 h-4" />
                     Watch Now
@@ -185,15 +208,15 @@ const TVDetails = () => {
                   {user && (
                     <button
                       onClick={handleAddToList}
-                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors min-w-[140px] justify-center ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors whitespace-nowrap ${
                         isInMyList(tvDetails.id, 'tv')
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-gray-700 hover:bg-gray-600 text-white'
                       }`}
                     >
-                      <Plus className="w-4 h-4" />
-                      <span className="whitespace-nowrap">
-                        {isInMyList(tvDetails.id, 'tv') ? 'In My List' : 'Add to List'}
+                      {isInMyList(tvDetails.id, 'tv') ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      <span>
+                        {isInMyList(tvDetails.id, 'tv') ? '- In My List' : '+ Add to List'}
                       </span>
                     </button>
                   )}
@@ -205,8 +228,94 @@ const TVDetails = () => {
                   />
                 </div>
 
-                <p className="text-gray-300 leading-relaxed text-lg">{tvDetails.overview}</p>
+                <p className="text-gray-300 leading-relaxed text-lg mb-8">{tvDetails.overview}</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Season & Episode Navigation */}
+        <div className="bg-gray-800 p-6">
+          <div className="container mx-auto">
+            <h2 className="text-2xl font-bold text-white mb-6">Episodes</h2>
+            
+            {/* Season Selection */}
+            <div className="mb-6">
+              <label className="block text-white text-sm font-medium mb-2">Season</label>
+              <select
+                value={selectedSeason}
+                onChange={(e) => setSelectedSeason(Number(e.target.value))}
+                className="p-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-yellow-400 outline-none"
+              >
+                {Array.from({ length: tvDetails.number_of_seasons || 1 }, (_, i) => i + 1).map(season => (
+                  <option key={season} value={season}>Season {season}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Episodes List */}
+            <div className="grid gap-4">
+              {episodes.map(episode => (
+                <div key={episode.id} className="bg-gray-700 rounded-lg p-4 flex gap-4">
+                  {/* Episode Image */}
+                  <div className="flex-shrink-0">
+                    {episode.still_path ? (
+                      <img
+                        src={`https://image.tmdb.org/t/p/w300${episode.still_path}`}
+                        alt={episode.name}
+                        className="w-40 h-24 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-40 h-24 bg-gray-600 rounded flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">No Image</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Episode Details */}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="text-white font-semibold">
+                          {episode.episode_number}. {episode.name}
+                        </h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-400 mt-1">
+                          {episode.runtime && <span>{episode.runtime}min</span>}
+                          {episode.vote_average > 0 && (
+                            <div className="flex items-center gap-1">
+                              <Star className="w-3 h-3 text-yellow-400" />
+                              <span>{episode.vote_average.toFixed(1)}</span>
+                            </div>
+                          )}
+                          {episode.air_date && <span>{new Date(episode.air_date).getFullYear()}</span>}
+                        </div>
+                      </div>
+                      
+                      {/* Episode Actions */}
+                      <div className="flex gap-2">
+                        <Link
+                          to={`/tv/watch/${tvDetails.id}?season=${selectedSeason}&episode=${episode.episode_number}`}
+                          className="flex items-center gap-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-black rounded text-sm font-medium transition-colors whitespace-nowrap"
+                        >
+                          <Play className="w-3 h-3" />
+                          Watch
+                        </Link>
+                        <button
+                          onClick={() => window.open(`https://dl.vidsrc.vip/tv/${tvDetails.id}/${selectedSeason}/${episode.episode_number}`, '_blank')}
+                          className="flex items-center gap-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-medium transition-colors whitespace-nowrap"
+                        >
+                          <Download className="w-3 h-3" />
+                          Download
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {episode.overview && (
+                      <p className="text-gray-300 text-sm line-clamp-2">{episode.overview}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

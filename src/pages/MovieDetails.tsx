@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, Calendar, Plus, Play } from 'lucide-react';
+import { Star, Calendar, Plus, Play, Minus } from 'lucide-react';
 import Header from '../components/Header';
 import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
@@ -170,7 +170,7 @@ const MovieDetails = () => {
                 <div className="flex gap-4 mb-6">
                   <Link
                     to={`/movie/watch/${movieDetails.id}`}
-                    className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors"
+                    className="flex items-center gap-2 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors whitespace-nowrap"
                   >
                     <Play className="w-4 h-4" />
                     Watch Now
@@ -179,15 +179,15 @@ const MovieDetails = () => {
                   {user && (
                     <button
                       onClick={handleAddToList}
-                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors min-w-[140px] justify-center ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded transition-colors whitespace-nowrap ${
                         isInMyList(movieDetails.id, 'movie')
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-gray-700 hover:bg-gray-600 text-white'
                       }`}
                     >
-                      <Plus className="w-4 h-4" />
-                      <span className="whitespace-nowrap">
-                        {isInMyList(movieDetails.id, 'movie') ? 'In My List' : 'Add to List'}
+                      {isInMyList(movieDetails.id, 'movie') ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      <span>
+                        {isInMyList(movieDetails.id, 'movie') ? '- In My List' : '+ Add to List'}
                       </span>
                     </button>
                   )}

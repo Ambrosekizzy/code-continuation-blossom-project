@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Download } from 'lucide-react';
 import Header from '../components/Header';
 
@@ -18,8 +17,13 @@ interface Season {
 
 const TVWatch = () => {
   const { id } = useParams<{ id: string }>();
-  const [currentSeason, setCurrentSeason] = useState(1);
-  const [currentEpisode, setCurrentEpisode] = useState(1);
+  const [searchParams] = useSearchParams();
+  const [currentSeason, setCurrentSeason] = useState(() => {
+    return Number(searchParams.get('season')) || 1;
+  });
+  const [currentEpisode, setCurrentEpisode] = useState(() => {
+    return Number(searchParams.get('episode')) || 1;
+  });
   const [tvDetails, setTVDetails] = useState<TVDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedServer, setSelectedServer] = useState(() => {
@@ -100,7 +104,7 @@ const TVWatch = () => {
       <Header />
       <main className="w-full">
         {/* Video Player */}
-        <div className="w-full h-[80vh]">
+        <div className="w-full h-[70vh]">
           <iframe
             src={currentServer?.url}
             className="w-full h-full border-0"
@@ -117,6 +121,39 @@ const TVWatch = () => {
               <h2 className="text-white text-xl font-bold">
                 {tvDetails.name} - Season {currentSeason}, Episode {currentEpisode}
               </h2>
+              
+              <p className="text-gray-400 text-sm text-center font-bold">
+                If a server doesn't work, switch to another
+              </p>
+
+              {/* Server Selection */}
+              <div className="flex items-center gap-4">
+                <span className="text-white text-sm font-medium">Server:</span>
+                <div className="flex gap-2">
+                  {servers.map(server => (
+                    <button
+                      key={server.id}
+                      onClick={() => handleServerChange(server.id)}
+                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                        selectedServer === server.id
+                          ? 'bg-yellow-400 text-black'
+                          : 'bg-gray-700 text-white hover:bg-gray-600'
+                      }`}
+                    >
+                      {server.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Download Button */}
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                Download
+              </button>
               
               {/* Season/Episode Selection */}
               <div className="flex flex-col md:flex-row gap-4 w-full max-w-md">
@@ -164,39 +201,6 @@ const TVWatch = () => {
                   Next Episode
                 </button>
               </div>
-
-              {/* Server Selection */}
-              <div className="flex items-center gap-4">
-                <span className="text-white text-sm font-medium">Server:</span>
-                <div className="flex gap-2">
-                  {servers.map(server => (
-                    <button
-                      key={server.id}
-                      onClick={() => handleServerChange(server.id)}
-                      className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
-                        selectedServer === server.id
-                          ? 'bg-yellow-400 text-black'
-                          : 'bg-gray-700 text-white hover:bg-gray-600'
-                      }`}
-                    >
-                      {server.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Download Button */}
-              <button
-                onClick={handleDownload}
-                className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Download
-              </button>
-
-              <p className="text-gray-400 text-sm text-center font-bold">
-                If a server doesn't work, switch to another
-              </p>
             </div>
           </div>
         </div>
