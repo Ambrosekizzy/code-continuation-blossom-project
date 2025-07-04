@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Plus } from 'lucide-react';
@@ -155,7 +154,7 @@ const TVWatch = () => {
         <div className="w-full">
           <iframe
             src={currentServer?.url}
-            className="w-full h-[50vh] border-0"
+            className="w-full h-[50vh] md:h-[70vh] border-0"
             allowFullScreen
             title="TV Show Player"
           />

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Menu, Filter, User, LogIn, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -25,7 +24,7 @@ const Header = () => {
     }
 
     try {
-      const endpoint = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US`;
+      const endpoint = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=en-US}`;
       
       const response = await fetch(endpoint);
       const data = await response.json();
@@ -51,7 +50,7 @@ const Header = () => {
           >
             <Menu className="w-6 h-6 text-white" />
           </button>
-          <Link to="/" className="text-2xl font-bold text-yellow-400">FMovies</Link>
+          <Link to="/" className="text-2xl font-bold text-yellow-400">Filmcave</Link>
         </div>
 
         <div className="flex items-center gap-4">
