@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Search, Menu, Filter, User, LogIn, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -113,10 +114,10 @@ const Header = () => {
           ) : (
             <Link
               to="/auth"
-              className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-yellow-400 text-black rounded hover:bg-yellow-500 transition-colors whitespace-nowrap"
             >
-              <LogIn className="w-4 h-4" />
-              Sign In
+              <LogIn className="w-4 h-4 flex-shrink-0" />
+              <span>Sign In</span>
             </Link>
           )}
         </div>

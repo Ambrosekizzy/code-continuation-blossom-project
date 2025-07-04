@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useMyList } from '../hooks/useMyList';
 
@@ -185,20 +186,6 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
           </div>
         ))}
       </div>
-      
-      {/* Navigation arrows */}
-      <button
-        onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
-      >
-        ←
-      </button>
-      <button
-        onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors z-10"
-      >
-        →
-      </button>
       
       {/* Dot indicators - moved to bottom center */}
       <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
