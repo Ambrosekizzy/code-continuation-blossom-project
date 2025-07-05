@@ -81,7 +81,7 @@ const MovieWatch = () => {
       <Header />
       <main className="w-full">
         {/* Video Player */}
-        <div className="w-full h-[70vh]">
+        <div className="w-full h-[50vh]">
           <iframe
             src={currentServer?.url}
             className="w-full h-full border-0"

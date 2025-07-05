@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Download } from 'lucide-react';
@@ -104,7 +105,7 @@ const TVWatch = () => {
       <Header />
       <main className="w-full">
         {/* Video Player */}
-        <div className="w-full h-[70vh]">
+        <div className="w-full h-[50vh]">
           <iframe
             src={currentServer?.url}
             className="w-full h-full border-0"

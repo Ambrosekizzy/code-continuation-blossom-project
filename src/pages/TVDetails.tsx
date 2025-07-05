@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Star, Calendar, Plus, Play, Download, Minus } from 'lucide-react';
@@ -166,7 +165,7 @@ const TVDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent" />
           
           {/* TV Show Details Overlaid - moved further up */}
-          <div className="absolute top-20 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
+          <div className="absolute top-10 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
             <div className="container mx-auto max-w-4xl">
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{tvDetails.name}</h1>
               
@@ -199,7 +198,7 @@ const TVDetails = () => {
                   className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors whitespace-nowrap"
                 >
                   <Play className="w-4 h-4" />
-                  Watch Now
+                  <span>Watch Now</span>
                 </Link>
 
                 {user && (
@@ -295,7 +294,7 @@ const TVDetails = () => {
                             {episode.air_date && <span>{new Date(episode.air_date).getFullYear()}</span>}
                           </div>
                           {episode.overview && (
-                            <p className="text-gray-300 text-sm line-clamp-3">{episode.overview}</p>
+                            <p className="text-gray-300 text-sm">{episode.overview}</p>
                           )}
                         </div>
                       </div>

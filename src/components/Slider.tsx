@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Info, Play } from 'lucide-react';
@@ -179,7 +178,6 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
                   className="flex items-center gap-2 bg-gray-700 text-white px-4 md:px-5 py-2 md:py-3 rounded font-semibold hover:bg-gray-600 transition-colors border-2 border-black text-sm md:text-base"
                 >
                   <Info className="w-4 h-4" />
-                  <span className="hidden md:inline">Details</span>
                 </Link>
                 <button 
                   onClick={() => toggleMyList(item)}

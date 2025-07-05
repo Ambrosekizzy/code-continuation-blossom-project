@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Star, Calendar, Plus, Play, Minus } from 'lucide-react';
+import { Star, Calendar, Plus, Play, Minus, Download } from 'lucide-react';
 import Header from '../components/Header';
 import TrailerDialog from '../components/TrailerDialog';
 import { useAuth } from '../contexts/AuthContext';
@@ -127,7 +127,7 @@ const MovieDetails = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent" />
           
           {/* Movie Details Overlaid - moved further up */}
-          <div className="absolute top-20 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
+          <div className="absolute top-10 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
             <div className="container mx-auto max-w-4xl">
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{movieDetails.title}</h1>
               
@@ -160,8 +160,16 @@ const MovieDetails = () => {
                   className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-semibold transition-colors whitespace-nowrap"
                 >
                   <Play className="w-4 h-4" />
-                  Watch Now
+                  <span>Watch Now</span>
                 </Link>
+
+                <button
+                  onClick={() => window.open(`https://dl.vidsrc.vip/movie/${movieDetails.id}`, '_blank')}
+                  className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-3 bg-green-600 hover:bg-green-700 text-white rounded font-semibold transition-colors whitespace-nowrap"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download</span>
+                </button>
 
                 {user && (
                   <button

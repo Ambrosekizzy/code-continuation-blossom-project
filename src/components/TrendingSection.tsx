@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { TrendingUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface TrendingItem {
   id: number;
@@ -56,8 +56,8 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({ movies, tvShows }) =>
       <div className="space-y-3">
         {currentData.map((item, index) => (
           <div key={item.id} className="flex items-center justify-between p-3 border-b border-gray-700 hover:bg-gray-800/50 transition-colors">
-            <a
-              href={activeTab === 'movies' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
+            <Link
+              to={activeTab === 'movies' ? `/movie/${item.id}` : `/tv/${item.id}`}
               className="flex items-center w-full text-white no-underline"
             >
               <div className="relative mr-5">
@@ -85,7 +85,7 @@ const TrendingSection: React.FC<TrendingSectionProps> = ({ movies, tvShows }) =>
                    item.first_air_date ? item.first_air_date.split('-')[0] : 'N/A'}
                 </span>
               </div>
-            </a>
+            </Link>
           </div>
         ))}
       </div>
