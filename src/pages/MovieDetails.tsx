@@ -126,8 +126,8 @@ const MovieDetails = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent" />
           
-          {/* Movie Details Overlaid */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+          {/* Movie Details Overlaid - moved further up */}
+          <div className="absolute top-20 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
             <div className="container mx-auto max-w-4xl">
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{movieDetails.title}</h1>
               
@@ -172,10 +172,17 @@ const MovieDetails = () => {
                         : 'bg-gray-700 hover:bg-gray-600 text-white'
                     }`}
                   >
-                    {isInMyList(movieDetails.id, 'movie') ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    <span>
-                      {isInMyList(movieDetails.id, 'movie') ? '- In My List' : '+ Add to List'}
-                    </span>
+                    {isInMyList(movieDetails.id, 'movie') ? (
+                      <>
+                        <Minus className="w-4 h-4" />
+                        <span>In My List</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" />
+                        <span>Add to List</span>
+                      </>
+                    )}
                   </button>
                 )}
                 

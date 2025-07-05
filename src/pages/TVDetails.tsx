@@ -165,8 +165,8 @@ const TVDetails = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/70 to-transparent" />
           
-          {/* TV Show Details Overlaid */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+          {/* TV Show Details Overlaid - moved further up */}
+          <div className="absolute top-20 bottom-0 left-0 right-0 p-4 md:p-8 flex items-center">
             <div className="container mx-auto max-w-4xl">
               <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{tvDetails.name}</h1>
               
@@ -211,10 +211,17 @@ const TVDetails = () => {
                         : 'bg-gray-700 hover:bg-gray-600 text-white'
                     }`}
                   >
-                    {isInMyList(tvDetails.id, 'tv') ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                    <span>
-                      {isInMyList(tvDetails.id, 'tv') ? '- In My List' : '+ Add to List'}
-                    </span>
+                    {isInMyList(tvDetails.id, 'tv') ? (
+                      <>
+                        <Minus className="w-4 h-4" />
+                        <span>In My List</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4" />
+                        <span>Add to List</span>
+                      </>
+                    )}
                   </button>
                 )}
                 
@@ -253,30 +260,31 @@ const TVDetails = () => {
             <ScrollArea className="h-[600px] w-full">
               <div className="grid gap-4 pr-4">
                 {episodes.map(episode => (
-                  <div key={episode.id} className="bg-gray-700 rounded-lg p-4 flex gap-4">
-                    {/* Episode Image */}
-                    <div className="flex-shrink-0">
-                      {episode.still_path ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w300${episode.still_path}`}
-                          alt={episode.name}
-                          className="w-32 md:w-40 h-18 md:h-24 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-32 md:w-40 h-18 md:h-24 bg-gray-600 rounded flex items-center justify-center">
-                          <span className="text-gray-400 text-sm">No Image</span>
+                  <div key={episode.id} className="bg-gray-700 rounded-lg p-4">
+                    <div className="flex flex-col space-y-4">
+                      {/* Episode Header */}
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        {/* Episode Image */}
+                        <div className="flex-shrink-0">
+                          {episode.still_path ? (
+                            <img
+                              src={`https://image.tmdb.org/t/p/w300${episode.still_path}`}
+                              alt={episode.name}
+                              className="w-full sm:w-40 h-24 object-cover rounded"
+                            />
+                          ) : (
+                            <div className="w-full sm:w-40 h-24 bg-gray-600 rounded flex items-center justify-center">
+                              <span className="text-gray-400 text-sm">No Image</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Episode Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col md:flex-row md:items-start justify-between mb-2">
+                        {/* Episode Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-white font-semibold text-sm md:text-base truncate">
+                          <h3 className="text-white font-semibold text-base mb-2">
                             {episode.episode_number}. {episode.name}
                           </h3>
-                          <div className="flex items-center gap-4 text-xs md:text-sm text-gray-400 mt-1">
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400 mb-2">
                             {episode.runtime && <span>{episode.runtime}min</span>}
                             {episode.vote_average > 0 && (
                               <div className="flex items-center gap-1">
@@ -286,30 +294,29 @@ const TVDetails = () => {
                             )}
                             {episode.air_date && <span>{new Date(episode.air_date).getFullYear()}</span>}
                           </div>
-                        </div>
-                        
-                        {/* Episode Actions */}
-                        <div className="flex gap-2 mt-2 md:mt-0 flex-shrink-0">
-                          <Link
-                            to={`/tv/watch/${tvDetails.id}?season=${selectedSeason}&episode=${episode.episode_number}`}
-                            className="flex items-center gap-1 px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-black rounded text-sm font-medium transition-colors whitespace-nowrap"
-                          >
-                            <Play className="w-3 h-3" />
-                            Watch
-                          </Link>
-                          <button
-                            onClick={() => window.open(`https://dl.vidsrc.vip/tv/${tvDetails.id}/${selectedSeason}/${episode.episode_number}`, '_blank')}
-                            className="flex items-center gap-1 px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm font-medium transition-colors whitespace-nowrap"
-                          >
-                            <Download className="w-3 h-3" />
-                            Download
-                          </button>
+                          {episode.overview && (
+                            <p className="text-gray-300 text-sm line-clamp-3">{episode.overview}</p>
+                          )}
                         </div>
                       </div>
                       
-                      {episode.overview && (
-                        <p className="text-gray-300 text-xs md:text-sm line-clamp-2">{episode.overview}</p>
-                      )}
+                      {/* Episode Actions - moved to bottom center */}
+                      <div className="flex justify-center gap-3">
+                        <Link
+                          to={`/tv/watch/${tvDetails.id}?season=${selectedSeason}&episode=${episode.episode_number}`}
+                          className="flex items-center gap-2 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded font-medium transition-colors"
+                        >
+                          <Play className="w-4 h-4" />
+                          Watch
+                        </Link>
+                        <button
+                          onClick={() => window.open(`https://dl.vidsrc.vip/tv/${tvDetails.id}/${selectedSeason}/${episode.episode_number}`, '_blank')}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium transition-colors"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
