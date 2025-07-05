@@ -99,7 +99,7 @@ const MovieWatch = () => {
               </p>
 
               {/* Server Selection */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col md:flex-row items-center gap-4">
                 <span className="text-white text-sm font-medium">Server:</span>
                 <div className="flex gap-2">
                   {servers.map(server => (

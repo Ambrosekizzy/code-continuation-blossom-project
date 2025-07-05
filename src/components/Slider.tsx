@@ -147,10 +147,10 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
               className="w-full h-80 md:h-[80vh] object-cover object-top"
             />
             <div className="absolute bottom-0 left-0 w-full p-5 bg-gradient-to-t from-black/80 to-transparent pb-16">
-              <h2 className="text-3xl font-bold mb-3 drop-shadow-lg text-white">
+              <h2 className="text-2xl md:text-3xl font-bold mb-3 drop-shadow-lg text-white">
                 {item.title || item.name}
               </h2>
-              <div className="flex items-center gap-4 mb-2 text-lg drop-shadow-lg text-white">
+              <div className="flex items-center gap-4 mb-2 text-sm md:text-lg drop-shadow-lg text-white">
                 <span className="font-bold">
                   {item.release_date ? item.release_date.split('-')[0] : 
                    item.first_air_date ? item.first_air_date.split('-')[0] : 'N/A'}
@@ -163,33 +163,33 @@ const Slider: React.FC<SliderProps> = ({ data }) => {
                   <span className="text-yellow-400">★</span> {item.vote_average.toFixed(1)}
                 </span>
               </div>
-              <div className="text-lg mb-4 drop-shadow-lg text-white">
+              <div className="text-sm md:text-lg mb-4 drop-shadow-lg text-white">
                 {item.genre_ids.map(id => getGenreName(id)).join(', ')}
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-2 md:gap-3">
                 <Link
                   to={item.media_type === 'movie' ? `/movie/watch/${item.id}` : `/tv/watch/${item.id}`}
-                  className="flex items-center gap-2 bg-white text-black px-5 py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black"
+                  className="flex items-center gap-2 bg-white text-black px-4 md:px-5 py-2 md:py-3 rounded font-semibold hover:bg-gray-200 transition-colors border-2 border-black text-sm md:text-base"
                 >
                   <Play className="w-4 h-4" />
                   Play
                 </Link>
                 <Link
                   to={item.media_type === 'movie' ? `/movie/${item.id}` : `/tv/${item.id}`}
-                  className="flex items-center gap-2 bg-gray-700 text-white px-5 py-3 rounded font-semibold hover:bg-gray-600 transition-colors border-2 border-black"
+                  className="flex items-center gap-2 bg-gray-700 text-white px-4 md:px-5 py-2 md:py-3 rounded font-semibold hover:bg-gray-600 transition-colors border-2 border-black text-sm md:text-base"
                 >
                   <Info className="w-4 h-4" />
-                  Details
+                  <span className="hidden md:inline">Details</span>
                 </Link>
                 <button 
                   onClick={() => toggleMyList(item)}
-                  className={`px-5 py-3 rounded font-semibold transition-colors border-2 border-black ${
+                  className={`px-4 md:px-5 py-2 md:py-3 rounded font-semibold transition-colors border-2 border-black text-sm md:text-base whitespace-nowrap ${
                     isInMyList(item.id, item.media_type)
                       ? 'bg-yellow-500 text-black hover:bg-yellow-600' 
                       : 'bg-white text-black hover:bg-gray-200'
                   }`}
                 >
-                  {isInMyList(item.id, item.media_type) ? '✓ In My List' : '+ My List'}
+                  {isInMyList(item.id, item.media_type) ? '- In My List' : '+ My List'}
                 </button>
               </div>
             </div>

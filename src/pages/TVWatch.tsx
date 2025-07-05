@@ -118,7 +118,7 @@ const TVWatch = () => {
           <div className="container mx-auto">
             <div className="flex flex-col items-center gap-4">
               {/* Episode Info */}
-              <h2 className="text-white text-xl font-bold">
+              <h2 className="text-white text-xl font-bold text-center">
                 {tvDetails.name} - Season {currentSeason}, Episode {currentEpisode}
               </h2>
               
@@ -127,7 +127,7 @@ const TVWatch = () => {
               </p>
 
               {/* Server Selection */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col md:flex-row items-center gap-4">
                 <span className="text-white text-sm font-medium">Server:</span>
                 <div className="flex gap-2">
                   {servers.map(server => (
